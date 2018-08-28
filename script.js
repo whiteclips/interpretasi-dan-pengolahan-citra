@@ -1,46 +1,27 @@
-$(document).ready( function() {
-    $(document).on('change', '.btn-file :file', function() {
-    var input = $(this),
-        label = input.val().replace(/\\/g, '/').replace(/.*\//, '');
-    input.trigger('fileselect', [label]);
-    });
+function draw() {
+    let canvas = document.getElementById('myCanvas');
+    canvas.width = this.width;
+    canvas.height = this.height;
+    let ctx = canvas.getContext('2d');
+    ctx.drawImage(this, 0,0);
+}
 
-    $('.btn-file :file').on('fileselect', function(event, label) {
-        
-        var input = $(this).parents('.input-group').find(':text'),
-            log = label;
-        
-        if( input.length ) {
-            input.val(log);
-        } else {
-            if( log ) alert(log);
-        }
-    
-    });
-    function readURL(input) {
-        if (input.files && input.files[0]) {
-            var reader = new FileReader();
-            
-            reader.onload = function (e) {
-                $('#container-image').attr('src', e.target.result);
-            }
-            
-            reader.readAsDataURL(input.files[0]);
-        }
+function validateForm() {
+    var image = document.getElementById("container-image").getAttribute("src");
+    console.log(image);
+    if (image == null) {
+        alert("Please upload an image!");
+        return false;
     }
 
-    $("#input-image").change(function(){
-        readURL(this);
-    }); 	
-});
+    return true;
+}
 
 function drawHistogram(red, green, blue, grayscale) {
 
     var x = [];
-    // var y = [];
     for (var i = 0; i < 255; i ++) {
         x[i] = i;
-        // y[i] = Math.random() * 100;
     }
 
     var layout = {
@@ -81,4 +62,73 @@ function drawHistogram(red, green, blue, grayscale) {
     Plotly.newPlot('histogram-blue', data);
     var data = [grayscaleTrace];
     Plotly.newPlot('histogram-grayscale', data);
+
+    var containers = document.getElementsByClassName("histogram-container");
+    Array.prototype.forEach.call(containers, function(element) {
+        element.style.display = "block";
+    });
+
 }
+
+$(document).ready( function() {
+
+    document.getElementById('input-image').onchange = function(e) {
+        let img = new Image();
+        img.onload = draw;
+        img.src = URL.createObjectURL(this.files[0]);
+        $('#container-image').attr('src', img.src);
+    };
+
+    document.getElementById('button-generate-histogram').onclick = function(e) {
+
+        if (!validateForm()) {
+            return;
+        }
+
+        var coefficientRed = document.getElementById("coefficient_red").value;
+        var coefficientGreen = document.getElementById("coefficient_green").value;
+        var coefficientBlue = document.getElementById("coefficient_blue").value;
+        if (coefficientRed == "" || coefficientGreen == "" || coefficientBlue == "") {
+            coefficientRed = 0.333;
+            coefficientGreen = 0.333;
+            coefficientBlue = 0.333;
+        }
+
+        let canvas = document.getElementById("myCanvas");
+        let ctx = canvas.getContext("2d");
+        let imgData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+        console.log(imgData);
+    
+        //extract data
+        let initArray = new Array(256);
+        for (let i = 0; i<initArray.length; i++)
+            initArray[i] = 0;
+        let redHist = initArray.slice();
+        let greenHist = initArray.slice();
+        let blueHist = initArray.slice();
+        let grayscaleHist = initArray.slice();
+    
+        for(let i=0; i<imgData.data.length; i++) {
+            if (i%4==0) //redHist
+                redHist[imgData.data[i]] += 1;
+            else if (i%4==1) //greenHist
+                greenHist[imgData.data[i]] += 1;
+            else if (i%4==2) //blueHist
+                blueHist[imgData.data[i]] += 1;
+        }
+    
+        //grayscale
+        let i = 0;
+        while(i < imgData.data.length) {
+            var red = coefficientRed * imgData.data[i];
+            var green = coefficientGreen * imgData.data[i+1];
+            var blue = coefficientBlue * imgData.data[i+2];
+            let grayscale = Math.round(red + green + blue);
+            grayscaleHist[grayscale] += 1;
+            i += 4;
+        }
+    
+        drawHistogram(redHist, greenHist, blueHist, grayscaleHist);
+    }
+
+});

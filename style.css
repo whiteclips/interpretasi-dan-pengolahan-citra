@@ -41,3 +41,7 @@
 .btn {
     width: 100%;
 }
+
+.histogram-container {
+    display: none;
+}

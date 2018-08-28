@@ -28,11 +28,12 @@
 				<div class="input-group">
 					<span class="input-group-btn">
 						<span class="btn btn-default btn-file">
-							Browse… <input type="file" id="input-image">
+							Browse… <input type="file" name="image" id="input-image">
 						</span>
 					</span>
 					<input type="text" class="form-control" readonly>
 				</div>
+				<canvas id="myCanvas" style="display:none"></canvas>
 				<img id="container-image"/>
 			</div>
 		</div>
@@ -40,6 +41,7 @@
 
 	<div class="container">
 		<div class="col-md-12"><label class="field-title">Grayscale Coefficient</label></div>
+		<div class="col-md-12"><label>If emptied, the default values are 1/3 for each</label></div>
 		<div class="col-md-2">
 			<div class="form-group">
 				<p for="coefficient_red">Red:</p>
@@ -58,41 +60,39 @@
 
 	<div class="container">
 		<div class="col-md-2">
-			<button type="button" class="btn btn-success">Generate Histogram</button>
+			<button type="button" id="button-generate-histogram" class="btn btn-success">Generate Histogram</button>
 		</div>
 	</div>
 
 	<div class="delimiter"></div>
 
-	<div class="container">
+	<div class="container histogram-container">
 		<div class="col-md-12">
 			<label class="field-title">Histogram Red</label>
-			<div class="histogram-container" id="histogram-red"></div>
+			<div id="histogram-red"></div>
 		</div>
 	</div>
 
-	<div class="container">
+	<div class="container histogram-container">
 		<div class="col-md-12">
 			<label class="field-title">Histogram Green</label>
-			<div class="histogram-container" id="histogram-green"></div>
+			<div id="histogram-green"></div>
 		</div>
 	</div>
 
-	<div class="container">
+	<div class="container histogram-container">
 		<div class="col-md-12">
 			<label class="field-title">Histogram Blue</label>
-			<div class="histogram-container" id="histogram-blue"></div>
+			<div id="histogram-blue"></div>
 		</div>
 	</div>
 
-	<div class="container">
+	<div class="container histogram-container">
 		<div class="col-md-12">
 			<label class="field-title">Histogram Grayscale</label>
-			<div class="histogram-container" id="histogram-grayscale"></div>
+			<div id="histogram-grayscale"></div>
 		</div>
 	</div>
-
-	<!-- <script>drawHistogram();</script> -->
 
 </body>
 
