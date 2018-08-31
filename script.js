@@ -20,9 +20,19 @@ function validateForm() {
 function drawHistogram(red, green, blue, grayscale) {
 
     var x = [];
+    var redColor = [];
+    var greenColor = [];
+    var blueColor = [];
+    var grayColor = [];
     for (var i = 0; i < 255; i ++) {
         x[i] = i;
+        redColor[i] = 'rgb('+i+', 0, 0)';
+        greenColor[i] = 'rgb(0,'+i+', 0)';
+        blueColor[i] = 'rgb(0, 0, '+i+')';
+        grayColor[i] = 'rgb('+i+','+i+','+i+')';
     }
+
+
 
     var layout = {
         xaxis: {
@@ -33,24 +43,28 @@ function drawHistogram(red, green, blue, grayscale) {
     var redTrace = {
         x: x,
         y: red,
+        marker: {color: redColor },
         type: 'bar',
     };
 
     var greenTrace = {
         x: x,
         y: green,
+        marker: {color: greenColor},
         type: 'bar',
     };
 
     var blueTrace = {
         x: x,
         y: blue,
+        marker: {color: blueColor },
         type: 'bar',
     };
-
+    
     var grayscaleTrace = {
         x: x,
         y: grayscale,
+        marker: {color: grayColor },
         type: 'bar',
     };
 
@@ -71,19 +85,25 @@ function drawHistogram(red, green, blue, grayscale) {
 }
 
 $(document).ready( function() {
-
+    
     document.getElementById('input-image').onchange = function(e) {
         let img = new Image();
         img.onload = draw;
         img.src = URL.createObjectURL(this.files[0]);
         $('#container-image').attr('src', img.src);
     };
-
+    
     document.getElementById('button-generate-histogram').onclick = function(e) {
-
+        
         if (!validateForm()) {
             return;
         }
+        
+        // disable input
+        $('#button-generate-histogram').text('Generating..');
+        $('#button-generate-histogram').prop('disabled', true);
+        $('#input-image').prop('disabled', true);
+        $('.form-control').prop('disabled', true);
 
         var coefficientRed = document.getElementById("coefficient_red").value;
         var coefficientGreen = document.getElementById("coefficient_green").value;
@@ -93,30 +113,30 @@ $(document).ready( function() {
             coefficientGreen = 0.333;
             coefficientBlue = 0.333;
         }
-
+        
         let canvas = document.getElementById("myCanvas");
         let ctx = canvas.getContext("2d");
         let imgData = ctx.getImageData(0, 0, canvas.width, canvas.height);
         console.log(imgData);
-    
+        
         //extract data
         let initArray = new Array(256);
         for (let i = 0; i<initArray.length; i++)
-            initArray[i] = 0;
+        initArray[i] = 0;
         let redHist = initArray.slice();
         let greenHist = initArray.slice();
         let blueHist = initArray.slice();
         let grayscaleHist = initArray.slice();
-    
+        
         for(let i=0; i<imgData.data.length; i++) {
             if (i%4==0) //redHist
-                redHist[imgData.data[i]] += 1;
+            redHist[imgData.data[i]] += 1;
             else if (i%4==1) //greenHist
-                greenHist[imgData.data[i]] += 1;
+            greenHist[imgData.data[i]] += 1;
             else if (i%4==2) //blueHist
-                blueHist[imgData.data[i]] += 1;
+            blueHist[imgData.data[i]] += 1;
         }
-    
+        
         //grayscale
         let i = 0;
         while(i < imgData.data.length) {
@@ -127,8 +147,14 @@ $(document).ready( function() {
             grayscaleHist[grayscale] += 1;
             i += 4;
         }
-    
+        
         drawHistogram(redHist, greenHist, blueHist, grayscaleHist);
+        
+        // enable input
+        $('#button-generate-histogram').text('Generate Histogram');
+        $('#button-generate-histogram').prop('disabled', false);
+        $('#input-image').prop('disabled', false);
+        $('.form-control').prop('disabled', false);
     }
-
+    
 });
