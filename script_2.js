@@ -2,12 +2,16 @@
 var srcImgElmt = new Image();
 srcImgElmt.onload = function () {
     drawOnCanvasFromImage('before-canvas', srcImgElmt);
+    console.log("Pre Executed");
+    console.log(this.src);
+    $('#before-image').attr('src', this.src);
+    console.log("Executed");
 }
 
 $(document).ready(function () {
     var $upload = document.getElementById('imageUpload');
     $upload.addEventListener('change', updateImage);
-    $("input[type='radio']").click(processImageOnAlgo);
+    $("#btn-cumulative").click(doCumulativeAlgo);
 });
 
 function updateImage(evt) {
@@ -22,18 +26,59 @@ function getImgDataFrom(canvas_id) {
     return imgData.data;
 }
 
-function processImageOnAlgo() {
-    switch (Number(this.value)) {
-        case 1:
-            doCumulativeAlgo();
-            break;
-        case 2:
-            doEqualizeAlgo();
-            break;
-        default:
-            console.log("Wrong algo");
-            break;
+function drawHistogram(rgbArray,afterRgbArray) {
+    var x = [];
+    var redColor = [];
+    var greenColor = [];
+    var blueColor = [];
+    var grayColor = [];
+    for (var i = 0; i < 255; i++) {
+        x[i] = i;
+        redColor[i] = 'rgb(' + i + ', 0, 0)';
+        greenColor[i] = 'rgb(0,' + i + ', 0)';
+        blueColor[i] = 'rgb(0, 0, ' + i + ')';
+        grayColor[i] = 'rgb(' + i + ',' + i + ',' + i + ')';
     }
+
+
+    var trace = {
+        x: x,
+        y: rgbArray['red'],
+        marker: { color: redColor },
+        type: 'bar',
+    };
+
+    Plotly.newPlot('histogram-red-before', [{ ...trace, y: rgbArray['red'], marker: { color: redColor }}]);
+    Plotly.newPlot('histogram-green-before', [{ ...trace, y: rgbArray['green'], marker: { color: greenColor }}]);
+    Plotly.newPlot('histogram-blue-before', [{ ...trace, y: rgbArray['blue'], marker: { color: blueColor }}]);
+    Plotly.newPlot('histogram-gray-before', [{ ...trace, y: rgbArray['gray'], marker: { color: grayColor }}]);
+    Plotly.newPlot('histogram-red-after', [{ ...trace, y: afterRgbArray['red'], marker: { color: redColor }}]);
+    Plotly.newPlot('histogram-green-after', [{ ...trace, y: afterRgbArray['green'], marker: { color: greenColor }}]);
+    Plotly.newPlot('histogram-blue-after', [{ ...trace, y: afterRgbArray['blue'], marker: { color: blueColor }}]);
+    Plotly.newPlot('histogram-gray-after', [{ ...trace, y: afterRgbArray['gray'], marker: { color: grayColor }}]);
+
+    // var greenTrace = {
+    //     x: x,
+    //     y: green,
+    //     marker: {color: greenColor},
+    //     type: 'bar',
+    // };
+
+    // var blueTrace = {
+    //     x: x,
+    //     y: blue,
+    //     marker: {color: blueColor },
+    //     type: 'bar',
+    // };
+
+    // var grayscaleTrace = {
+    //     x: x,
+    //     y: grayscale,
+    //     marker: {color: grayColor },
+    //     type: 'bar',
+    // };
+
+
 }
 
 function doCumulativeAlgo() {
@@ -45,6 +90,7 @@ function doCumulativeAlgo() {
         var rgbMapper = getRGBMapper(rgbArray);
         var mappedArray = mapArray(rawImgArray, rgbMapper);
         drawOnCanvasFromRGB('after-canvas', srcImgElmt.width, srcImgElmt.height, mappedArray);
+        drawHistogram(rgbArray, getRGBArray(mappedArray));
     }
 }
 
@@ -57,11 +103,14 @@ function getRGBArray(rawImgArr) {
     rgb['red'] = initArray.slice();
     rgb['green'] = initArray.slice();
     rgb['blue'] = initArray.slice();
+    rgb['gray'] = initArray.slice();
 
     for (var i = 0; i < rawImgArr.length; i += 4) {
         rgb['red'][rawImgArr[i]]++;
         rgb['green'][rawImgArr[i + 1]]++;
         rgb['blue'][rawImgArr[i + 2]]++;
+        var grayValue = Math.floor((rawImgArr[i] + rawImgArr[i + 1] + rawImgArr[i + 2]) / 3);
+        rgb['gray'][grayValue]++;
     }
     return rgb;
 }

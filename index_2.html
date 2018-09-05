@@ -1,48 +1,90 @@
 <!DOCTYPE html>
 <html>
+
 <head>
-	<title>Image Equalization</title>
-	<!-- Plot.ly CDN -->
-	<script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
-	<!-- Bootstrap CDN -->
-	<!-- Latest compiled and minified CSS -->
-	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
-	<!-- jQuery library -->
-	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
-	<!-- Latest compiled JavaScript -->
-	<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
-	<!-- Stylesheet -->
-	<link rel="stylesheet" type="text/css" href="style.css">
-	<!-- Script -->
-	<script src="script_2.js"></script>
+  <title>Image Equalization</title>
+  <!-- Plot.ly CDN -->
+  <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+  <!-- Bootstrap CDN -->
+  <!-- Latest compiled and minified CSS -->
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+  <!-- jQuery library -->
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+  <!-- Latest compiled JavaScript -->
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+  <!-- Stylesheet -->
+  <link rel="stylesheet" type="text/css" href="style.css">
+  <!-- Script -->
+  <script src="script_2.js"></script>
 </head>
 
 <body>
 
-	<div class="container">
-		<div class="row">
-			<div class="col-sm-6 bg-primary">
-				
-		<div class="form-group">
-			<label for="exampleFormControlFile1">Input the image</label>
-			<input id="imageUpload" type="file" class="form-control-file">
-		</div>
-			</div>
-			
-			<div class="col-sm-6">
-				<input type="radio" name="algo-type" value="1" > Algo 1<br>
-				<input type="radio" name="algo-type" value="2"> Algo 2
-			</div>
-		</div>
-		<div>
-			<h1> Before </h1>
-			<canvas id="before-canvas"/>
-		</div>
-		<div>
-			<h1> After </h1>
-			<canvas id="after-canvas"/>
-		</div>
-	</div>
+  <div class="container">
+    <div class="row">
+      <div class="col-sm-6 bg-primary">
+
+        <div class="form-group">
+          <label for="form-control-file">Input the image</label>
+          <input id="imageUpload" type="file" class="form-control-file">
+        </div>
+      </div>
+
+      <div class="col-sm-6">
+        <button id="btn-cumulative" type="button" class="btn btn-outline-success btn-lg">Cumulative Algo</button>
+      </div>
+    </div>
+    <div class="row">
+      <div class="col-sm-6">
+        <h1> Before </h1>
+        <canvas id="before-canvas" style="max-width: 100%"/>
+      </div>
+      <div class="col-sm-6">
+        <h1> After </h1>
+        <canvas id="after-canvas" style="max-width: 100%" />
+      </div>
+    </div>
+    <div class="row">
+      <div class="col-sm-6">
+        <h1> Histogram RED Before </h1>
+        <div id="histogram-red-before"></div>
+      </div>
+      <div class="col-sm-6">
+        <h1> Histogram RED After </h1>
+        <div id="histogram-red-after"></div>
+      </div>
+    </div>
+    <div class="row">
+      <div class="col-sm-6">
+        <h1> Histogram GREEN Before </h1>
+        <div id="histogram-green-before"></div>
+      </div>
+      <div class="col-sm-6">
+        <h1> Histogram GREEN After </h1>
+        <div id="histogram-green-after"></div>
+      </div>
+    </div>
+    <div class="row">
+      <div class="col-sm-6">
+        <h1> Histogram BLUE Before </h1>
+        <div id="histogram-blue-before"></div>
+      </div>
+      <div class="col-sm-6">
+        <h1> Histogram BLUE After </h1>
+        <div id="histogram-blue-after"></div>
+      </div>
+    </div>
+    <div class="row">
+      <div class="col-sm-6">
+        <h1> Histogram AFTER Before </h1>
+        <div id="histogram-gray-before"></div>
+      </div>
+      <div class="col-sm-6">
+        <h1> Histogram AFTER After </h1>
+        <div id="histogram-gray-after"></div>
+      </div>
+    </div>
+  </div>
 
 </body>
 
