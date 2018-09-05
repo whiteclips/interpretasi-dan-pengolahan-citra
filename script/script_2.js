@@ -12,6 +12,7 @@ $(document).ready(function () {
     var $upload = document.getElementById('imageUpload');
     $upload.addEventListener('change', updateImage);
     $("#btn-cumulative").click(doCumulativeAlgo);
+    $("#btn-linearStretch").click(doLinearStretch);
 });
 
 function updateImage(evt) {
@@ -26,7 +27,7 @@ function getImgDataFrom(canvas_id) {
     return imgData.data;
 }
 
-function drawHistogram(rgbArray,afterRgbArray) {
+function drawHistogram(rgbArray, afterRgbArray) {
     var x = [];
     var redColor = [];
     var greenColor = [];
@@ -48,36 +49,14 @@ function drawHistogram(rgbArray,afterRgbArray) {
         type: 'bar',
     };
 
-    Plotly.newPlot('histogram-red-before', [{ ...trace, y: rgbArray['red'], marker: { color: redColor }}]);
-    Plotly.newPlot('histogram-green-before', [{ ...trace, y: rgbArray['green'], marker: { color: greenColor }}]);
-    Plotly.newPlot('histogram-blue-before', [{ ...trace, y: rgbArray['blue'], marker: { color: blueColor }}]);
-    Plotly.newPlot('histogram-gray-before', [{ ...trace, y: rgbArray['gray'], marker: { color: grayColor }}]);
-    Plotly.newPlot('histogram-red-after', [{ ...trace, y: afterRgbArray['red'], marker: { color: redColor }}]);
-    Plotly.newPlot('histogram-green-after', [{ ...trace, y: afterRgbArray['green'], marker: { color: greenColor }}]);
-    Plotly.newPlot('histogram-blue-after', [{ ...trace, y: afterRgbArray['blue'], marker: { color: blueColor }}]);
-    Plotly.newPlot('histogram-gray-after', [{ ...trace, y: afterRgbArray['gray'], marker: { color: grayColor }}]);
-
-    // var greenTrace = {
-    //     x: x,
-    //     y: green,
-    //     marker: {color: greenColor},
-    //     type: 'bar',
-    // };
-
-    // var blueTrace = {
-    //     x: x,
-    //     y: blue,
-    //     marker: {color: blueColor },
-    //     type: 'bar',
-    // };
-
-    // var grayscaleTrace = {
-    //     x: x,
-    //     y: grayscale,
-    //     marker: {color: grayColor },
-    //     type: 'bar',
-    // };
-
+    Plotly.newPlot('histogram-red-before', [{ ...trace, y: rgbArray['red'], marker: { color: redColor } }]);
+    Plotly.newPlot('histogram-green-before', [{ ...trace, y: rgbArray['green'], marker: { color: greenColor } }]);
+    Plotly.newPlot('histogram-blue-before', [{ ...trace, y: rgbArray['blue'], marker: { color: blueColor } }]);
+    Plotly.newPlot('histogram-gray-before', [{ ...trace, y: rgbArray['gray'], marker: { color: grayColor } }]);
+    Plotly.newPlot('histogram-red-after', [{ ...trace, y: afterRgbArray['red'], marker: { color: redColor } }]);
+    Plotly.newPlot('histogram-green-after', [{ ...trace, y: afterRgbArray['green'], marker: { color: greenColor } }]);
+    Plotly.newPlot('histogram-blue-after', [{ ...trace, y: afterRgbArray['blue'], marker: { color: blueColor } }]);
+    Plotly.newPlot('histogram-gray-after', [{ ...trace, y: afterRgbArray['gray'], marker: { color: grayColor } }]);
 
 }
 
@@ -87,7 +66,20 @@ function doCumulativeAlgo() {
     } else {
         var rawImgArray = getImgDataFrom('before-canvas');
         var rgbArray = getRGBArray(rawImgArray);
-        var rgbMapper = getRGBMapper(rgbArray);
+        var rgbMapper = getRGBMapper(rgbArray, "cumulative");
+        var mappedArray = mapArray(rawImgArray, rgbMapper);
+        drawOnCanvasFromRGB('after-canvas', srcImgElmt.width, srcImgElmt.height, mappedArray);
+        drawHistogram(rgbArray, getRGBArray(mappedArray));
+    }
+}
+
+function doLinearStretch() {
+    if (srcImgElmt.src == "") {
+        console.log("TODO: Insert warning error bcs img not uploaded");
+    } else {
+        var rawImgArray = getImgDataFrom('before-canvas');
+        var rgbArray = getRGBArray(rawImgArray);
+        var rgbMapper = getRGBMapper(rgbArray, "linear-stretch");
         var mappedArray = mapArray(rawImgArray, rgbMapper);
         drawOnCanvasFromRGB('after-canvas', srcImgElmt.width, srcImgElmt.height, mappedArray);
         drawHistogram(rgbArray, getRGBArray(mappedArray));
@@ -115,16 +107,38 @@ function getRGBArray(rawImgArr) {
     return rgb;
 }
 
-function getRGBMapper(rgbArray) {
+function getRGBMapper(rgbArray, type) {
     var mapper = {}
-    mapper['red'] = getCumMapper(rgbArray['red']);
-    mapper['green'] = getCumMapper(rgbArray['green']);
-    mapper['blue'] = getCumMapper(rgbArray['blue']);
+    if (type == "cumulative") {
+        mapper['red'] = getCumMapper(rgbArray['red']);
+        mapper['green'] = getCumMapper(rgbArray['green']);
+        mapper['blue'] = getCumMapper(rgbArray['blue']);
+    } else if (type == "linear-stretch") {
+        mapper['red'] = getLinearStretchMapper(rgbArray['red']);
+        mapper['green'] = getLinearStretchMapper(rgbArray['green']);
+        mapper['blue'] = getLinearStretchMapper(rgbArray['blue']);
+    }
     return mapper;
 }
 
+function getLinearStretchMapper(imgChannelArray) {
+    const NMIN = 0;
+    const NMAX = 255;
+    var OMIN = 0, OMAX = 255;
+    // Get OMIN
+    while (imgChannelArray[OMIN] == 0) OMIN++;
+    while (imgChannelArray[OMAX] == 0) OMAX--;
+    var space = Math.floor((NMAX - NMIN) / (OMAX - OMIN));
+    var bins = OMAX - OMIN;
+    var cumMapper = imgChannelArray.slice();
+    for (var i = 0; i <= bins; i++) {
+        cumMapper[i + OMIN] = NMIN + (i * space);
+    }
+    return cumMapper;
+}
+
 function getCumMapper(imgChannelArray) {
-    var cumMapper = new Array(256);
+    var cumMapper = new Array(256);;
     cumMapper[0] = imgChannelArray[0];
     for (var i = 1; i < cumMapper.length; i++) {
         cumMapper[i] = cumMapper[i - 1] + imgChannelArray[i];
