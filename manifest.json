@@ -1,0 +1,13 @@
+{
+    "short_name": "Image Processing App",
+    "name": "Image Processing App",
+    "icons": [
+        {
+          "src": "/images/image.png",
+          "type": "image/png",
+          "sizes": "256x256"
+        }
+      ],
+    "start_url": "/index.html",
+    "display": "standalone"
+}
