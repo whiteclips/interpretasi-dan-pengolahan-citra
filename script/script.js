@@ -29,7 +29,6 @@ function drawHistogram(red, green, blue, grayscale) {
         redColor[i] = 'rgb('+i+', 0, 0)';
         greenColor[i] = 'rgb(0,'+i+', 0)';
         blueColor[i] = 'rgb(0, 0, '+i+')';
-        grayColor[i] = 'rgb('+i+','+i+','+i+')';
     }
 
 
@@ -64,8 +63,8 @@ function drawHistogram(red, green, blue, grayscale) {
     var grayscaleTrace = {
         x: x,
         y: grayscale,
-        marker: {color: grayColor },
-        type: 'bar',
+        marker: {color: 'rgb(70,70,70)'},
+        type: 'bar'
     };
 
     var data = [redTrace];

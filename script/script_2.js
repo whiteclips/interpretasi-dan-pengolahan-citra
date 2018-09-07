@@ -32,13 +32,11 @@ function drawHistogram(rgbArray, afterRgbArray) {
     var redColor = [];
     var greenColor = [];
     var blueColor = [];
-    var grayColor = [];
     for (var i = 0; i < 255; i++) {
         x[i] = i;
         redColor[i] = 'rgb(' + i + ', 0, 0)';
         greenColor[i] = 'rgb(0,' + i + ', 0)';
         blueColor[i] = 'rgb(0, 0, ' + i + ')';
-        grayColor[i] = 'rgb(' + i + ',' + i + ',' + i + ')';
     }
 
 
@@ -56,7 +54,7 @@ function drawHistogram(rgbArray, afterRgbArray) {
     Plotly.newPlot('histogram-red-after', [{ ...trace, y: afterRgbArray['red'], marker: { color: redColor } }]);
     Plotly.newPlot('histogram-green-after', [{ ...trace, y: afterRgbArray['green'], marker: { color: greenColor } }]);
     Plotly.newPlot('histogram-blue-after', [{ ...trace, y: afterRgbArray['blue'], marker: { color: blueColor } }]);
-    Plotly.newPlot('histogram-gray-after', [{ ...trace, y: afterRgbArray['gray'], marker: { color: grayColor } }]);
+    Plotly.newPlot('histogram-gray-after', [{ ...trace, y: afterRgbArray['gray'], marker: {color: 'rgb(70,70,70)'}}]);
 
 }
 
