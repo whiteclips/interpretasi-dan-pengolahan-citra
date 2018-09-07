@@ -126,19 +126,23 @@ function getLinearStretchMapper(imgChannelArray) {
     const NMAX = 255;
     var OMIN = 0, OMAX = 255;
     // Get OMIN
+    console.log("Will loop");
     while (imgChannelArray[OMIN] == 0) OMIN++;
     while (imgChannelArray[OMAX] == 0) OMAX--;
-    var space = Math.floor((NMAX - NMIN) / (OMAX - OMIN));
+    console.log("OMIN ",OMIN," , OMAX ",OMAX);
+    var space = (NMAX - NMIN) / (OMAX - OMIN);
+    console.log("NMAX-NMIN: ",(NMAX-NMIN)," OMAX-OMIN: ",(OMAX-OMIN)," SPACE ",space);
     var bins = OMAX - OMIN;
     var cumMapper = imgChannelArray.slice();
     for (var i = 0; i <= bins; i++) {
-        cumMapper[i + OMIN] = NMIN + (i * space);
+        cumMapper[i + OMIN] = NMIN + Math.floor(i * space);
+        console.log(cumMapper[i+OMIN]);
     }
     return cumMapper;
 }
 
 function getCumMapper(imgChannelArray) {
-    var cumMapper = new Array(256);;
+    var cumMapper = new Array(256);
     cumMapper[0] = imgChannelArray[0];
     for (var i = 1; i < cumMapper.length; i++) {
         cumMapper[i] = cumMapper[i - 1] + imgChannelArray[i];
