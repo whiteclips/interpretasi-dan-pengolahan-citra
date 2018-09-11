@@ -58,6 +58,8 @@ function editHistogram(grayscale) {
             },
             onDrag: function (event, datasetIndex, index, value) {
                 console.log(datasetIndex, index, value);
+                // TODO: update grayscaleGlobal
+                // TODO: update gambar
             },
             onDragEnd: function (event, datasetIndex, index, value) {
     
@@ -96,17 +98,9 @@ function drawHistogram(red, green, blue, grayscale) {
     $('html,body').animate({scrollTop: document.body.scrollHeight},"medium");
 
     let label = [];
-    let redHist = [];
-    let greenHist = [];
-    let blueHist = [];
-    let grayHist = [];
     
     for (let i=0; i<256; i++) {
         label[i] = i;
-        redHist[i] = "rgba("+i+", 0, 0, 1)";
-        greenHist[i] = "rgba(0, "+i+", 0, 1)";
-        blueHist[i] = "rgba(0, 0, "+i+", 1)";
-        grayHist[i] = "rgba(40, 40, 40, 1)";
     }
     
     var ctx = document.getElementById("myChart").getContext('2d');
