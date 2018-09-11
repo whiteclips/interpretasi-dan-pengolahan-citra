@@ -45,3 +45,8 @@
 .histogram-container {
     display: none;
 }
+
+.chart-hint,
+#histogram-text {
+    text-align: center;
+}
