@@ -21,6 +21,8 @@
 
 	<div class="page-title">Image Specification</div>
 
+	<hr>
+
 	<div class="container">
 		<div class="col-md-6">
 			<div class="form-group">
@@ -54,8 +56,20 @@
 	<p class="chart-hint">Click on label below to show/hide chart</p>
 
 	<canvas id="myChart" width="200" height="200" style="padding: 10px"></canvas>
+	<canvas id="myChartEditMode" width="200" height="200" style="padding: 10px"></canvas>
+
+	<div class="container">
+		<div class="col-md-2">
+			<button type="button" id="btn-edit-histogram" class="btn btn-warning">Edit Histogram</button>
+		</div>
+	</div>
+
+	<br>
+
+	<!-- <input type="range" orient="vertical" /> -->
 
 </body>
 <!-- Script -->
 <script src="/script/script_3.js"></script>
+<script src="/script/chartjs-plugin-dragData.js"></script>
 </html>

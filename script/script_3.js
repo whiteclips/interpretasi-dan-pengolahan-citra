@@ -1,3 +1,7 @@
+var myChart;
+var redGlobal, blueGlobal, greenGlobal, grayscaleGlobal;
+var editMode = false;
+
 function draw() {
     let canvas = document.getElementById('myCanvas');
     canvas.width = this.width;
@@ -16,22 +20,87 @@ function validateForm() {
     return true;
 }
 
-function drawHistogram(red, green, blue, grayscale) {
+function editHistogram(grayscale) {
+    editMode = true;
+    $('#btn-edit-histogram').text('Save Histogram');
+    $('.chart-hint').text('Edit Mode (See preview above)');
+    $('#myChart').hide();
+    $('#myChartEditMode').show();
 
+    var grayscale = [];
+    var label = [0, 63, 127, 191, 255];
+
+    for (let i=0; i<8; i++) {
+        grayscale[i] = grayscaleGlobal[label[i]];
+    }
+
+    var ctx = document.getElementById("myChartEditMode").getContext('2d');
+    myChart = new Chart(ctx, {
+        type: 'line',
+        data: {
+            labels: label,
+            datasets: [{
+                label: 'Grayscale',
+                data: grayscale,
+                backgroundColor: [
+                    'rgba(54, 54, 54, 0.2)',
+                ],
+                borderColor: 'rgba(54, 54, 54, 1)',
+                borderWidth: 1,
+                // pointRadius: 1,
+            }]
+        },
+        options: {
+            dragData: true,
+            dragX: false,
+            onDragStart: function (event, element) {
+    
+            },
+            onDrag: function (event, datasetIndex, index, value) {
+                console.log(datasetIndex, index, value);
+            },
+            onDragEnd: function (event, datasetIndex, index, value) {
+    
+            },
+            scales: {
+                yAxes: [{
+                    ticks: {
+                        beginAtZero:true,
+                        max: 10000,
+                        min: 0,
+                    }
+                }]
+            }
+        }
+    });
+}
+
+function saveHistogram() {
+    editMode = false;
+    $('#btn-edit-histogram').text('Edit Histogram');
+    $('.chart-hint').text('Click on label below to show/hide chart');
+    $('#myChart').show();
+    $('#myChartEditMode').hide();
+
+    drawHistogram(redGlobal, greenGlobal, blueGlobal, grayscaleGlobal);
+}
+
+function drawHistogram(red, green, blue, grayscale) {
+    $('#btn-edit-histogram').show();
     $('.chart-hint').show();
     $('#histogram-text').show();
     $('#histogram-boundary').show();
     $('#myChart').show();
+    $('#myChartEditMode').hide();
 
     $('html,body').animate({scrollTop: document.body.scrollHeight},"medium");
 
-    var ctx = document.getElementById("myChart").getContext('2d');
     let label = [];
     let redHist = [];
     let greenHist = [];
     let blueHist = [];
     let grayHist = [];
-
+    
     for (let i=0; i<256; i++) {
         label[i] = i;
         redHist[i] = "rgba("+i+", 0, 0, 1)";
@@ -39,9 +108,10 @@ function drawHistogram(red, green, blue, grayscale) {
         blueHist[i] = "rgba(0, 0, "+i+", 1)";
         grayHist[i] = "rgba(40, 40, 40, 1)";
     }
-
-    new Chart(ctx, {
-        type: 'line',
+    
+    var ctx = document.getElementById("myChart").getContext('2d');
+    myChart = new Chart(ctx, {
+        type: 'bar',
         data: {
             labels: label,
             datasets: [
@@ -54,6 +124,7 @@ function drawHistogram(red, green, blue, grayscale) {
                     borderColor: 'rgba(255, 0, 0, 1)',
                     borderWidth: 2,
                     pointRadius: 0,
+                    hidden: true,
                 },
                 {
                     label: 'Green',
@@ -86,7 +157,7 @@ function drawHistogram(red, green, blue, grayscale) {
                     borderColor: 'rgba(54, 54, 54, 1)',
                     borderWidth: 1,
                     pointRadius: 0,
-                    hidden: true,
+                    // hidden: true,
                 },
 
             ]
@@ -95,7 +166,9 @@ function drawHistogram(red, green, blue, grayscale) {
             scales: {
                 yAxes: [{
                     ticks: {
-                        beginAtZero:true
+                        beginAtZero:true,
+                        max: 10000,
+                        min: 0,
                     }
                 }]
             }
@@ -108,6 +181,9 @@ $(document).ready( function() {
     $('.chart-hint').hide();
     $('#histogram-text').hide();
     $('#histogram-boundary').hide();
+    $('#myChart').hide();
+    $('#myChartEditMode').hide();
+    $('#btn-edit-histogram').hide();
     
     document.getElementById('input-image').onchange = function(e) {
         let img = new Image();
@@ -116,6 +192,7 @@ $(document).ready( function() {
         $('#container-image').attr('src', img.src);
 
         $('#myChart').hide();
+        $('#myChartEditMode').hide();
         $('.chart-hint').hide();
         $('#histogram-text').hide();
         $('#histogram-boundary').hide();
@@ -172,12 +249,24 @@ $(document).ready( function() {
         }
         
         drawHistogram(redHist, greenHist, blueHist, grayscaleHist);
+        redGlobal = redHist;
+        greenGlobal = greenHist;
+        blueGlobal = blueHist;
+        grayscaleGlobal = grayscaleHist;
         
         // enable input
         $('#button-generate-histogram').text('Generate Histogram');
         $('#button-generate-histogram').prop('disabled', false);
         $('#input-image').prop('disabled', false);
         $('.form-control').prop('disabled', false);
+    };
+
+    document.getElementById('btn-edit-histogram').onclick = function(e) {
+        if (editMode)
+            saveHistogram();
+        else {
+            editHistogram(grayscaleGlobal);
+        }
     }
     
 });
