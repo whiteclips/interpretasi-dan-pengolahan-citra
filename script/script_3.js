@@ -2,6 +2,10 @@ var myChart;
 var redGlobal, blueGlobal, greenGlobal, grayscaleGlobal;
 var editMode = false;
 
+var imgDataGlobal;
+var ctxGlobal;
+var canvasGlobal;
+
 function draw() {
     let canvas = document.getElementById('myCanvas');
     canvas.width = this.width;
@@ -16,7 +20,6 @@ function validateForm() {
         alert("Please upload an image!");
         return false;
     }
-
     return true;
 }
 
@@ -28,9 +31,10 @@ function editHistogram(grayscale) {
     $('#myChartEditMode').show();
 
     var grayscale = [];
+    //  Dont change this value for now
     var label = [0, 63, 127, 191, 255];
 
-    for (let i=0; i<8; i++) {
+    for (let i=0; i<5; i++) {
         grayscale[i] = grayscaleGlobal[label[i]];
     }
 
@@ -57,12 +61,13 @@ function editHistogram(grayscale) {
     
             },
             onDrag: function (event, datasetIndex, index, value) {
-                console.log(datasetIndex, index, value);
-                // TODO: update grayscaleGlobal
-                // TODO: update gambar
+
             },
             onDragEnd: function (event, datasetIndex, index, value) {
-    
+                //  Updating value of histogram array
+                // TODO: update grayscaleGlobal
+                // TODO: update gambar
+                grayscaleGlobal[label[index]] = value;
             },
             scales: {
                 yAxes: [{
@@ -84,7 +89,38 @@ function saveHistogram() {
     $('#myChart').show();
     $('#myChartEditMode').hide();
 
+    //  Updating value of histogram array
+    var label = [0, 63, 127, 191, 255];
+    for (let i = 1; i < 5; i++) {
+        var deltaY = grayscaleGlobal[label[i]] - grayscaleGlobal[label[i - 1]];
+        var deltaX = label[i] - label[i - 1];
+        var m = deltaY / deltaX;
+        for (let j = label[i - 1] + 1; j < label[i]; j++) {
+            grayscaleGlobal[j] = grayscaleGlobal[j - 1] + m;
+        }
+    }
+
     drawHistogram(redGlobal, greenGlobal, blueGlobal, grayscaleGlobal);
+
+    //  Updating image
+    var min = Math.min.apply(null, grayscaleGlobal);
+    var max = Math.max.apply(null, grayscaleGlobal);
+    var range = max - min;
+    var unit = 256 / range;
+    for (let i = 0; i < imgDataGlobal.data.length; i += 4) {
+        var currentValue = imgDataGlobal.data[i];
+        imgDataGlobal.data[i] = grayscaleGlobal[currentValue] * unit;
+    }
+
+    var canvasResult = document.getElementById("myCanvasResult");
+    var imageSrc = document.getElementById("container-image");
+    console.log(imageSrc.width, imageSrc.height);
+    canvasResult.width = imageSrc.width;
+    canvasResult.height = imageSrc.height;
+    var contextResult = canvasResult.getContext("2d");
+    contextResult.putImageData(imgDataGlobal, 0, 0);
+    // var result = document.getElementById("container-image-result");
+    // contextResult.drawImage(result, canvasResult.width, canvasResult.height);
 }
 
 function drawHistogram(red, green, blue, grayscale) {
@@ -209,8 +245,12 @@ $(document).ready( function() {
         coefficientBlue = 0.333;
         
         let canvas = document.getElementById("myCanvas");
+        canvasGlobal = canvas;
         let ctx = canvas.getContext("2d");
+        ctxGlobal = ctx;
         let imgData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+        console.log(imgData);
+        imgDataGlobal = imgData;
         // console.log(imgData);
         
         //extract data

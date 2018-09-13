@@ -30,6 +30,10 @@
     width: 100%;
 }
 
+#container-image-result{
+    width: 100%;
+}
+
 .field-title {
     font-size: 18px;
 }

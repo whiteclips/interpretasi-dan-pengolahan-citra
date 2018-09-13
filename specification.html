@@ -18,31 +18,28 @@
 </head>
 
 <body>
-
 	<div class="page-title">Image Specification</div>
-
-	<hr>
-
 	<div class="container">
 		<div class="col-md-6">
-			<div class="form-group">
-				<label class="field-title">Upload Image</label>
-				<div class="input-group">
-					<span class="input-group-btn">
-						<span class="btn btn-default btn-file">
-							Browse Image <input type="file" name="image" id="input-image">
-						</span>
-					</span>
-					<input type="text" class="form-control" readonly>
-				</div>
-				<canvas id="myCanvas" style="display:none"></canvas>
-				<img id="container-image"/>
-			</div>
+			<label class="field-title">Upload Image</label>
+			<span class="btn btn-default btn-file">
+				Browse Image <input type="file" name="input-image" id="input-image">
+			</span>
+			<hr>
+			<label class="field-title">Choose the component to be specified (R, G, or B):</label>
+			<select class="form-control" id="input-component">
+				<option>Red</option>
+				<option>Green</option>
+				<option>Blue</option>
+			</select>
+			<hr>
+			<canvas id="myCanvas" style="display:none"></canvas>
+			<img id="container-image"/>
+			<canvas id="myCanvasResult"></canvas>
 		</div>
 	</div>
-
 	<div class="container">
-		<div class="col-md-2">
+		<div class="col-md-6">
 			<button type="button" id="button-generate-histogram" class="btn btn-success">Generate Histogram</button>
 		</div>
 	</div>
