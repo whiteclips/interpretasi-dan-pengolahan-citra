@@ -25,19 +25,16 @@
 			<span class="btn btn-default btn-file">
 				Browse Image <input type="file" name="input-image" id="input-image">
 			</span>
-			<hr>
-			<label class="field-title">Choose the component to be specified (R, G, or B):</label>
-			<select class="form-control" id="input-component">
-				<option>Red</option>
-				<option>Green</option>
-				<option>Blue</option>
-			</select>
-			<hr>
-			<canvas id="myCanvas" style="display:none"></canvas>
+			<br><br>
+			<canvas id="myCanvas" style="display: none;"></canvas>
 			<img id="container-image"/>
-			<canvas id="myCanvasResult"></canvas>
+			<canvas id="myCanvasResult" style="display: none;"></canvas>
+			<img id="container-image-result"/>
 		</div>
 	</div>
+
+	<br>
+
 	<div class="container">
 		<div class="col-md-6">
 			<button type="button" id="button-generate-histogram" class="btn btn-success">Generate Histogram</button>
@@ -54,6 +51,18 @@
 
 	<canvas id="myChart" width="200" height="200" style="padding: 10px"></canvas>
 	<canvas id="myChartEditMode" width="200" height="200" style="padding: 10px"></canvas>
+
+	<div class="container" id="colorSelector">
+		<div class="col-md-6">
+			<label class="field-title">Choose the RGB component to be specified:</label>
+			<select class="form-control" id="input-component">
+				<option>Red</option>
+				<option>Green</option>
+				<option>Blue</option>
+			</select>
+		</div>
+		<br>
+	</div>
 
 	<div class="container">
 		<div class="col-md-2">
