@@ -1,7 +1,8 @@
-from flask import Flask
-from flask import render_template
-from flask import Response
+from flask import Flask, render_template, Response, request, flash
+from werkzeug.utils import secure_filename
+
 import json
+
 app = Flask(__name__)
 
 @app.route('/')
@@ -41,3 +42,8 @@ def specification():
 def text_reader():
     return render_template('text-reader.html')
 
+@app.route('/text-reader-process', methods=['POST'])
+def text_reader_process():
+    f = request.files['file']
+    if (f):
+        return f.filename

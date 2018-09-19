@@ -50,7 +50,7 @@ $(document).ready( function() {
         formData.append('file', $('#input-image')[0].files[0]);
 
         $.ajax({
-            url : '/url',
+            url : '/text-reader-process',
             type : 'POST',
             data : formData,
             processData: false,  // tell jQuery not to process the data
