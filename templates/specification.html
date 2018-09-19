@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Image Specification</title>
+	<!-- Chart js CDN -->
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.7.2/Chart.bundle.min.js"></script>
+	<!-- Bootstrap CDN -->
+	<!-- Latest compiled and minified CSS -->
+	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+	<!-- jQuery library -->
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+	<!-- Latest compiled JavaScript -->
+	<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+	<!-- Stylesheet -->
+	<link rel="stylesheet" type="text/css" href="../static/style.css">
+	<!-- Meta -->
+	<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+</head>
+
+<body>
+	<div class="page-title">Image Specification</div>
+	<div class="container">
+		<div class="col-md-6">
+			<label class="field-title">Upload Image</label>
+			<span class="btn btn-default btn-file">
+				Browse Image <input type="file" name="input-image" id="input-image">
+			</span>
+			<br><br>
+			<canvas id="myCanvas" style="display: none;"></canvas>
+			<img id="container-image"/>
+			<canvas id="myCanvasResult" style="display: none;"></canvas>
+			<img id="container-image-result"/>
+		</div>
+	</div>
+
+	<br>
+
+	<div class="container">
+		<div class="col-md-6">
+			<button type="button" id="button-generate-histogram" class="btn btn-success">Generate Histogram</button>
+		</div>
+	</div>
+
+	<br>
+
+	<hr id="histogram-boundary">
+
+	<h3 id="histogram-text">Histogram</h3>
+	
+	<p class="chart-hint">Click on label below to show/hide chart</p>
+
+	<canvas id="myChart" width="200" height="200" style="padding: 10px"></canvas>
+	<canvas id="myChartEditMode" width="200" height="200" style="padding: 10px"></canvas>
+
+	<div class="container" id="colorSelector">
+		<div class="col-md-6">
+			<label class="field-title">Choose the RGB component to be specified:</label>
+			<select class="form-control" id="input-component">
+				<option>Red</option>
+				<option>Green</option>
+				<option>Blue</option>
+			</select>
+		</div>
+		<br>
+	</div>
+
+	<div class="container">
+		<div class="col-md-2">
+			<button type="button" id="btn-edit-histogram" class="btn btn-warning">Edit Histogram</button>
+		</div>
+	</div>
+
+	<br>
+
+	<!-- <input type="range" orient="vertical" /> -->
+
+</body>
+<!-- Script -->
+<script src="../static/script_3.js"></script>
+<script src="../static/chartjs-plugin-dragData.js"></script>
+</html>

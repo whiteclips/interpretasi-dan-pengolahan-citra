@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>RGB-Grayscale Histogram</title>
+	<!-- Plot.ly CDN -->
+	<script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+	<!-- Bootstrap CDN -->
+	<!-- Latest compiled and minified CSS -->
+	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+	<!-- jQuery library -->
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+	<!-- Latest compiled JavaScript -->
+	<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+	<!-- Stylesheet -->
+	<link rel="stylesheet" type="text/css" href="../static/style.css">
+	<!-- Meta -->
+	<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+</head>
+
+<body>
+
+	<div class="page-title">RGB-Grayscale Histogram</div>
+
+	<div class="container">
+		<div class="col-md-6">
+			<div class="form-group">
+				<label class="field-title">Upload Image</label>
+				<div class="input-group">
+					<span class="input-group-btn">
+						<span class="btn btn-default btn-file">
+							Browse Image <input type="file" name="image" id="input-image">
+						</span>
+					</span>
+					<input type="text" class="form-control" readonly>
+				</div>
+				<canvas id="myCanvas" style="display:none"></canvas>
+				<img id="container-image"/>
+			</div>
+		</div>
+	</div>
+
+	<div class="container">
+		<div class="col-md-12"><label class="field-title">Grayscale Coefficient</label></div>
+		<div class="col-md-12"><label>If emptied, the default values are 1/3 for each</label></div>
+		<div class="col-md-2">
+			<div class="form-group">
+				<p for="coefficient_red">Red:</p>
+				<input type="text" class="form-control" id="coefficient_red">
+			</div>
+			<div class="form-group">
+				<p for="coefficient_green">Green:</p>
+				<input type="text" class="form-control" id="coefficient_green">
+			</div>
+			<div class="form-group">
+				<p for="coefficient_blue">Blue:</p>
+				<input type="text" class="form-control" id="coefficient_blue">
+			</div>
+		</div>
+	</div>
+
+	<div class="container">
+		<div class="col-md-2">
+			<button type="button" id="button-generate-histogram" class="btn btn-success">Generate Histogram</button>
+		</div>
+	</div>
+	
+	<div class="delimiter"></div>
+	
+	<div class="container histogram-container" style="width: auto">
+		<!-- <div class="col-md-2"> -->
+			<label class="field-title">Histogram Red</label>
+			<div id="histogram-red"></div>
+		<!-- </div> -->
+	</div>
+
+	<div class="container histogram-container">
+		<div class="col-md-12">
+			<label class="field-title">Histogram Green</label>
+			<div id="histogram-green"></div>
+		</div>
+	</div>
+
+	<div class="container histogram-container">
+		<div class="col-md-12">
+			<label class="field-title">Histogram Blue</label>
+			<div id="histogram-blue"></div>
+		</div>
+	</div>
+
+	<div class="container histogram-container">
+		<div class="col-md-12">
+			<label class="field-title">Histogram Grayscale</label>
+			<div id="histogram-grayscale"></div>
+		</div>
+	</div>
+
+</body>
+<!-- Script -->
+<script src="../static/script.js"></script>
+</html>

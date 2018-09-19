@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Text Reader</title>
+	<!-- Chart js CDN -->
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.7.2/Chart.bundle.min.js"></script>
+	<!-- Bootstrap CDN -->
+	<!-- Latest compiled and minified CSS -->
+	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+	<!-- jQuery library -->
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+	<!-- Latest compiled JavaScript -->
+	<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+	<!-- Stylesheet -->
+	<link rel="stylesheet" type="text/css" href="../static/style.css">
+	<!-- Meta -->
+	<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+</head>
+
+<body>
+	<div class="page-title">Text Reader</div>
+	<div class="container">
+		<div class="col-md-6">
+			<label class="field-title">Upload Image</label>
+			<span class="btn btn-default btn-file">
+				Browse Image <input type="file" name="input-image" id="input-image">
+			</span>
+			<!-- <canvas id="myCanvas" style="display: none;"></canvas> -->
+			<img id="container-image"/>
+		</div>
+	</div>
+
+	<br>
+
+	<div class="container">
+		<div class="col-md-6">
+			<button type="button" id="button-read-text" class="btn btn-success">Identify Image</button>
+		</div>
+	</div>
+
+	<br>
+
+	<div class="container">
+		<div class="col-md-6">
+			<h4>Hasil</h4>
+			<p id=result></p>
+		</div>
+	</div>
+
+	<br>
+
+</body>
+<!-- Script -->
+<script src="../static/script_4.js"></script>
+</html>
