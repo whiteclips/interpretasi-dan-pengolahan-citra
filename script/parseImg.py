@@ -16,6 +16,9 @@ class Direction:
                                                     self.SE, self.SW, self.NW)
         return s
 
+    def total(self):
+        return (self.N+self.E+self.S+self.W+self.NE+self.SE+self.SW+self.NW)
+
     def addPoint(self, r1, c1, r2, c2):
         if (r1-r2 < 0):
             if (c1-c2 < 0):

@@ -19,7 +19,6 @@ function validateForm() {
 
 $(document).ready( function() {
 
-    $('#result').hide();
 
     document.getElementById('input-image').onchange = function(e) {
     
@@ -27,7 +26,6 @@ $(document).ready( function() {
         // img.onload = draw;
         img.src = URL.createObjectURL(this.files[0]);
         $('#container-image').attr('src', img.src);
-        $('#result').hide();
     };
     
     document.getElementById('button-read-text').onclick = function(e) {
@@ -57,7 +55,8 @@ $(document).ready( function() {
             contentType: false,  // tell jQuery not to set contentType
             success : function(data) {
                 console.log(data);
-                $('#result').text(data);
+                $('#result').html(data);
+
             },
             error: function() {
                 alert ('Oops, Something went wrong');
