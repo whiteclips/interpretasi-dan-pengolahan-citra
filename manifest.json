@@ -3,7 +3,7 @@
     "name": "Image Processing App",
     "icons": [
         {
-          "src": "/images/image.png",
+          "src": "/static/image.png",
           "type": "image/png",
           "sizes": "256x256"
         }
