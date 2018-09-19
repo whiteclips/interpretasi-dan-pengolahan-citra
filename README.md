@@ -1,5 +1,5 @@
 How to Run:
 
-. venv/bin/activate
-export FLASK_APP=hello.py
-flask run
+. venv/bin/activate <br />
+export FLASK_APP=hello.py <br />
+flask run <br />
