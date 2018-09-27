@@ -1,6 +1,6 @@
 from PIL import Image
 import numpy as np
-from queue import Queue
+from multiprocessing import Queue
 
 MAGIC = 77
 
