@@ -23,7 +23,7 @@ def manifest():
             "sizes": "256x256"
             }
         ],
-        "start_url": "/index.html",
+        "start_url": "/",
         "display": "standalone"
     })
     return Response(data, mimetype='application/x-web-app-manifest+json')
@@ -90,7 +90,7 @@ def thinning_process():
     f = request.files['file']
     if (f):
         # process file
-        
+
         path = 'static/dump/' + f.filename
         f.save(path)
         return path
