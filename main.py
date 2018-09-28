@@ -80,3 +80,17 @@ def text_reader_process():
         # print(arr)
         # else:
         #     return dir.total
+
+@app.route('/thinning')
+def thinning():
+    return render_template('thinning.html')
+
+@app.route('/thinning-process', methods=['POST'])
+def thinning_process():
+    f = request.files['file']
+    if (f):
+        # process file
+        
+        path = 'static/dump/' + f.filename
+        f.save(path)
+        return path
