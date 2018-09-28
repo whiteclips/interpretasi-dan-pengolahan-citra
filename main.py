@@ -1,5 +1,6 @@
 from flask import Flask, render_template, Response, request, flash
 from script.parseImg import *
+from script.thin import *
 from werkzeug.utils import secure_filename
 
 import json
@@ -56,30 +57,6 @@ def text_reader_process():
         for d in dir:
             res += str(d.predict(models))
         return res
-        # dir, newArr = getDirectionFromArray(arr)
-        # if (dir.total() == 237):
-        #     return '0'
-        # elif (dir.total() == 193):
-        #     return '1'
-        # elif (dir.total() == 333):
-        #     return '2'
-        # elif (dir.total() == 339):
-        #     return '3'
-        # elif (dir.total() == 215):
-        #     return '4'
-        # elif (dir.total() == 314):
-        #     return '5'
-        # elif (dir.total() == 287):
-        #     return '6'
-        # elif (dir.total() == 237):
-        #     return '7'
-        # elif (dir.total() == 239):
-        #     return '8'
-        # elif (dir.total() == 285):
-        #     return '9'
-        # print(arr)
-        # else:
-        #     return dir.total
 
 @app.route('/thinning')
 def thinning():
@@ -89,8 +66,11 @@ def thinning():
 def thinning_process():
     f = request.files['file']
     if (f):
-        # process file
 
+        # process file
+        arr = getSegmentedImageArray(f)
+        skeletonized = skeletonizedImage(arr)
         path = 'static/dump/' + f.filename
-        f.save(path)
+        Image.fromarray(np.uint8(skeletonized)).save(path)
+
         return path
