@@ -143,30 +143,30 @@ def zhangSuen(imageArr):
                     (not isNeighborInArray(i, j, cross_candidate))
                 ):
                     current_cross = (i, j)
-                    print('', file=sys.stdout)
-                    print(current_cross, file=sys.stdout)
+                    #print('', file=sys.stdout)
+                    #print(current_cross, file=sys.stdout)
                     cross_candidate.append(current_cross)
                     # # cari awal percabangan
                     init_branch = get_init_branch(i, j)
-                    print(init_branch, file=sys.stdout)
+                    #print(init_branch, file=sys.stdout)
                     for b in init_branch:
                         # telusuri semua cabang
-                        print("====", file=sys.stdout)
+                        #print("====", file=sys.stdout)
                         current_pixel = b
                         branch_path = []
                         branch_path.append(current_pixel)
                         isNoise = False
                         stop = False
                         while not isNoise and not stop and len(branch_path) < min_len:
-                            print(current_pixel, file=sys.stdout)
+                            #print(current_pixel, file=sys.stdout)
                             neighbors_val = getNeighboursValue(current_pixel[0], current_pixel[1])
                             neighbors_coord = getNeighboursCoordinat(current_pixel[0], current_pixel[1])
                             if (sum(neighbors_val) == 1) :
                                 isNoise = True
-                                print("noise", file=sys.stdout)
+                                #print("noise", file=sys.stdout)
                             elif (sum(neighbors_val) >= 4):
                                 stop = True
-                                print("stop", file=sys.stdout)
+                                #print("stop", file=sys.stdout)
                             else:
                                 for n in range(8):
                                     if (
@@ -179,8 +179,8 @@ def zhangSuen(imageArr):
                                 branch_path.append(current_pixel)
 
                         if isNoise:
-                            print("Noise", file=sys.stdout)
-                            print(branch_path, file=sys.stdout)
+                            #print("Noise", file=sys.stdout)
+                            #print(branch_path, file=sys.stdout)
                             # hapus branch_path dari arr
                             for bp in branch_path:
                                 arr[bp[0], bp[1]] = 0
