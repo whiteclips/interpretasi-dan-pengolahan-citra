@@ -232,7 +232,7 @@ def zhangSuen(imageArr):
             if ((arr[i, j] == 1) and (sum(neighbors) == 1)):
                 tip_candidate.append((i, j))
     
-    print(tip_candidate, file=sys.stdout)
+    #print(tip_candidate, file=sys.stdout)
 
     # search cross (persimpangan)
     cross_candidate = []
@@ -254,7 +254,7 @@ def zhangSuen(imageArr):
     temp = '  '
     for j in range(1, col - 1):
         temp = temp + str(j%9) + ' '
-    print(temp, file=sys.stdout)
+    #print(temp, file=sys.stdout)
     # print to log
     for i in range(1, row - 1):
         temp = str(i%9) + ' '
@@ -264,7 +264,7 @@ def zhangSuen(imageArr):
             else:
                 temp = temp + '- '
 
-        print(temp, file=sys.stdout)
+        #print(temp, file=sys.stdout)
 
     return (res, tip_candidate, cross_candidate)
 
