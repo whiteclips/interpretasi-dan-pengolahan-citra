@@ -1,4 +1,4 @@
-from flask import Flask, render_template, Response, request, flash
+from flask import Flask, render_template, Response, request, flash, jsonify
 from script.parseImg import *
 from script.thin import *
 from werkzeug.utils import secure_filename
@@ -69,8 +69,10 @@ def thinning_process():
 
         # process file
         arr = getSegmentedImageArray(f)
-        skeletonized = skeletonizedImage(arr)
+        (skeletonized, tips, cross) = skeletonizedImage(arr)
+        # predict
+        prediction = predict(tips, cross)
         path = 'static/dump/' + f.filename
         Image.fromarray(np.uint8(skeletonized)).save(path)
 
-        return path
+        return jsonify({'path' : path, 'prediction' : prediction})
