@@ -2,7 +2,7 @@ import numpy as np
 from PIL import Image
 import sys
 
-def zhangSuen(imageArr):
+def zhangSuen(imageArr, noise_threshold_percent):
     np.set_printoptions(threshold=np.nan)
 
     # Convert to 0 and 1 array (1 black, 0 white)
@@ -30,11 +30,11 @@ def zhangSuen(imageArr):
         if sum(neighbors) < 3:
             return True
         isStick = False
-        countStraightNeighbours = 0
+        straight_neighbors = []
         n = 0
-        while (not isStick) and (n < 8):
+        while (n < 8):
             if ((n % 2 == 0) and neighbors[n]):
-                countStraightNeighbours += 1
+                straight_neighbors.append(n)
             if (n < 7):
                 if (neighbors[n] and neighbors[n+1]):
                     isStick = True
@@ -43,8 +43,17 @@ def zhangSuen(imageArr):
                     isStick = True
             n += 1
 
-        if (countStraightNeighbours > 2):
+        if (len(straight_neighbors) > 2):
             return True
+        elif (len(straight_neighbors) == 2):
+            if (0 in straight_neighbors and 2 in straight_neighbors and neighbors[5]):
+                return False
+            elif (2 in straight_neighbors and 4 in straight_neighbors and neighbors[7]):
+                return False
+            elif (4 in straight_neighbors and 6 in straight_neighbors and neighbors[1]):
+                return False
+            elif (6 in straight_neighbors and 0 in straight_neighbors and neighbors[3]):
+                return False
         return isStick
 
     def isNeighborInArray(i, j, arr):
@@ -66,6 +75,27 @@ def zhangSuen(imageArr):
             if (neighbor_val_arr[n] == 1):
                 result.append(neighbor_coordinate_arr[n])
         return result
+
+    # def isCircularPoint(i, j, path, cross):
+    #     neighbor_val_arr = getNeighboursValue(i, j)
+    #     neighbor_coordinate_arr = getNeighboursCoordinat(i, j)
+    #     neighbor_in_path_count = 0
+    #     for n in neighbor_coordinate_arr:
+    #         if (
+    #             neighbor_val_arr[n] and
+    #             (
+    #                 neighbor_coordinate_arr[n] in init_branch or
+    #                 neighbor_coordinate_arr[n] == cross or
+    #                 neighbor_coordinate_arr[n] in get_init_branch(cross[0],cross[1])
+    #             )
+    #         ):
+    #             neighbor_in_path_count += 1
+
+    #     if (neighbor_in_path_count > 1):
+    #         return True
+    #     else:
+    #         return False
+
 
     marked_1, marked_2 = 1, 1
     while marked_1 or marked_2:
@@ -129,9 +159,9 @@ def zhangSuen(imageArr):
                         arr[i, j-1] = 0
 
     # noise clearance
+    # noise_threshold_percent = 0.07
     visited = []
     cross_candidate = []
-    min_len = 9
     for i in range(1, row - 1):
         for j in range(1, col - 1):
             if (arr[i, j] == 1) and (i, j) not in visited:
@@ -143,32 +173,41 @@ def zhangSuen(imageArr):
                     (not isNeighborInArray(i, j, cross_candidate))
                 ):
                     current_cross = (i, j)
-                    #print('', file=sys.stdout)
-                    #print(current_cross, file=sys.stdout)
+                    print('', file=sys.stdout)
+                    print(current_cross, file=sys.stdout)
                     cross_candidate.append(current_cross)
-                    # # cari awal percabangan
+                    # cari awal percabangan
                     init_branch = get_init_branch(i, j)
-                    #print(init_branch, file=sys.stdout)
+                    print(init_branch, file=sys.stdout)
+                    branches = []
+                    max_len_branch = 0
+                    
                     for b in init_branch:
                         # telusuri semua cabang
-                        #print("====", file=sys.stdout)
+                        print("====", file=sys.stdout)
                         current_pixel = b
                         branch_path = []
                         branch_path.append(current_pixel)
-                        isNoise = False
                         stop = False
-                        while not isNoise and not stop and len(branch_path) < min_len:
-                            #print(current_pixel, file=sys.stdout)
+                        while not stop:
+                            print(current_pixel, file=sys.stdout)
                             neighbors_val = getNeighboursValue(current_pixel[0], current_pixel[1])
                             neighbors_coord = getNeighboursCoordinat(current_pixel[0], current_pixel[1])
                             if (sum(neighbors_val) == 1) :
-                                isNoise = True
-                                #print("noise", file=sys.stdout)
+                                stop = True
+                                print("stop1", file=sys.stdout)
                             elif (sum(neighbors_val) >= 4):
                                 stop = True
-                                #print("stop", file=sys.stdout)
+                                print("stop2", file=sys.stdout)
                             else:
-                                for n in range(8):
+                                # print("jumlah tetangga : " + str(sum(neighbors_val)), file=sys.stdout)
+                                n = 0
+                                isNextExist = False
+                                while not isNextExist and n < 8:
+                                    # print("kondisi 1 : " + str(neighbors_val[n]), file=sys.stdout)
+                                    # print("kondisi 2 : " + str(neighbors_coord[n] not in init_branch), file=sys.stdout)
+                                    # print("kondisi 3 : " + str(neighbors_coord[n] not in branch_path), file=sys.stdout)
+                                    # print("kondisi 4 : " + str(neighbors_coord[n] != current_cross), file=sys.stdout)
                                     if (
                                         neighbors_val[n] and
                                         neighbors_coord[n] not in init_branch and
@@ -176,53 +215,31 @@ def zhangSuen(imageArr):
                                         neighbors_coord[n] != current_cross
                                     ):
                                         current_pixel = neighbors_coord[n]
-                                branch_path.append(current_pixel)
+                                        isNextExist = True
+                                    else:
+                                        n += 1
 
-                        if isNoise:
-                            #print("Noise", file=sys.stdout)
-                            #print(branch_path, file=sys.stdout)
-                            # hapus branch_path dari arr
-                            for bp in branch_path:
-                                arr[bp[0], bp[1]] = 0
+                                if (isNextExist):
+                                    branch_path.append(current_pixel)
+                                else:
+                                    stop = True
+                        
+                        branches.append(branch_path)
+
+                        if (max_len_branch < len(branch_path)):
+                            max_len_branch = len(branch_path)
+
+                    noise_threshold = int(round(noise_threshold_percent * max_len_branch))
+                    print("threshold: " + str(noise_threshold), file=sys.stdout)
+                    for branch in branches:
+                        if (len(branch) < noise_threshold):
+                            print("Noise", file=sys.stdout)
+                            print(branch, file=sys.stdout)
+                            # hapus branch dari arr
+                            for b in branch:
+                                arr[b[0], b[1]] = 0
                         
                 visited.append((i, j))
-
-    # telusuri
-    # visited = []
-    # char_candidate = []
-    # char_counter = 0
-    # char_length_threshold = 10
-    # is_inc = True
-
-    # while is_inc:
-    #     is_inc = False
-    #     for i in range(1, row - 1):
-    #         for j in range(1, col - 1):
-    #             if (arr[i, j] == 1) and not in visited:
-    #                 is_inc = True
-    #                 tip_candidate = []
-    #                 cross_candidate = []
-    #                 current = {'i' : i, 'j' : j}
-    #                 while len(next(i, j)) != 0:
-    #                     # cek apakah ujung
-    #                     neighbors = getNeighboursValue(i, j)
-    #                     if ((arr[i, j] == 1) and (sum(neighbors) == 1)):
-    #                         tip_candidate.append((i, j))
-
-    #                     # cek apakah persimpangan
-    #                     if (
-    #                         (arr[i, j] == 1) and
-    #                         (sum(neighbors) > 2) and
-    #                         (not isNeighborInArray(i, j, cross_candidate))
-    #                     ):
-    #                         cross_candidate.append((i, j))
-                        
-    #                     # tandai visited
-    #                     visited.append((i, j))
-
-    #                     # cari next-nya
-
-    #                 char_candidate.append({'tip' : tip_candidate, 'cross' : cross_candidate})
 
     # search tip (ujung)
     tip_candidate = []
@@ -232,7 +249,8 @@ def zhangSuen(imageArr):
             if ((arr[i, j] == 1) and (sum(neighbors) == 1)):
                 tip_candidate.append((i, j))
     
-    #print(tip_candidate, file=sys.stdout)
+    print("tip", file=sys.stdout)
+    print(tip_candidate, file=sys.stdout)
 
     # search cross (persimpangan)
     cross_candidate = []
@@ -246,7 +264,8 @@ def zhangSuen(imageArr):
             ):
                 cross_candidate.append((i, j))
     
-    # print(cross_candidate, file=sys.stdout)
+    print("cross", file=sys.stdout)
+    print(cross_candidate, file=sys.stdout)
 
     # Convert back to original black and white
     res = ((arr == 0).astype(int) * 255)
@@ -254,7 +273,7 @@ def zhangSuen(imageArr):
     temp = '  '
     for j in range(1, col - 1):
         temp = temp + str(j%9) + ' '
-    #print(temp, file=sys.stdout)
+    print(temp, file=sys.stdout)
     # print to log
     for i in range(1, row - 1):
         temp = str(i%9) + ' '
@@ -264,7 +283,7 @@ def zhangSuen(imageArr):
             else:
                 temp = temp + '- '
 
-        #print(temp, file=sys.stdout)
+        print(temp, file=sys.stdout)
 
     return (res, tip_candidate, cross_candidate)
 
@@ -278,39 +297,44 @@ def getSegmentedImageArray(imgPath):
 def showImage(arrImage):
     Image.fromarray(np.uint8(arrImage)).show()
 
-def skeletonizedImage(arrImage):
-  (newImg, tips, cross) = zhangSuen(arrImage)
+def skeletonizedImage(arrImage, noise_threshold_percent):
+  (newImg, tips, cross) = zhangSuen(arrImage, noise_threshold_percent)
   res = ((arrImage == newImg) * 255).astype(int)
   return (res, tips, cross)
 
 def predict(tips, cross):
-    if (len(tips) == 0):
-        if (len(cross) == 0):
-            return 0
-        else :
-            return 8
-    elif (tips[0] == (29, 6) and tips[1] == (59, 25)):
-        return 1
-    elif (tips[0] == (26, 10) and tips[1] == (67, 40)):
-        return 2
-    elif (tips[0] == (21, 9) and tips[1] == (38, 22) and tips[2] == (58, 11)):
-        return 3
-    elif (tips[0] == (10, 33) and tips[1] == (49, 40) and tips[2] == (60, 32)):
-        return 4
-    elif (tips[0] == (11, 36) and tips[1] == (56, 12)):
-        return 5
-    elif (tips[0] == (13, 36)):
-        return 6
-    elif (tips[0] == (11, 10) and tips[1] == (61, 16)):
-        return 7
-    elif (tips[0] == (55, 13)):
-        return 9
+    if (len(cross) == 8):
+        return '#'
+    else:
+        return 'unknown'
+
+    # if (len(tips) == 0):
+    #     if (len(cross) == 0):
+    #         return 0
+    #     else :
+    #         return 8
+    # elif (tips[0] == (29, 6) and tips[1] == (59, 25)):
+    #     return 1
+    # elif (tips[0] == (26, 10) and tips[1] == (67, 40)):
+    #     return 2
+    # elif (tips[0] == (21, 9) and tips[1] == (38, 22) and tips[2] == (58, 11)):
+    #     return 3
+    # elif (tips[0] == (10, 33) and tips[1] == (49, 40) and tips[2] == (60, 32)):
+    #     return 4
+    # elif (tips[0] == (11, 36) and tips[1] == (56, 12)):
+    #     return 5
+    # elif (tips[0] == (13, 36)):
+    #     return 6
+    # elif (tips[0] == (11, 10) and tips[1] == (61, 16)):
+    #     return 7
+    # elif (tips[0] == (55, 13)):
+    #     return 9
 
 
 
 if __name__ == "__main__":
     arr = getSegmentedImageArray("./res/arial.png")
-    skeletonized = skeletonizedImage(arr)
+    skeletonized = skeletonizedImage(arr, 0.08)
     # showImage(arr)
     # showImage(newImg)
     showImage(skeletonized)

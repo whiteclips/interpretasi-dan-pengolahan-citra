@@ -2,6 +2,7 @@ from flask import Flask, render_template, Response, request, flash, jsonify
 from script.parseImg import *
 from script.thin import *
 from werkzeug.utils import secure_filename
+import uuid
 
 import json
 
@@ -66,13 +67,14 @@ def thinning():
 def thinning_process():
     f = request.files['file']
     if (f):
-
+        noise_percentage = request.form['noise']
         # process file
         arr = getSegmentedImageArray(f)
-        (skeletonized, tips, cross) = skeletonizedImage(arr)
+        (skeletonized, tips, cross) = skeletonizedImage(arr, float(noise_percentage))
         # predict
         prediction = predict(tips, cross)
-        path = 'static/dump/' + f.filename
+        unique_filename = str(uuid.uuid4())
+        path = 'static/dump/' + unique_filename + f.filename
         Image.fromarray(np.uint8(skeletonized)).save(path)
 
         return jsonify({'path' : path, 'prediction' : prediction})

@@ -29,6 +29,17 @@ $(document).ready( function() {
         // var fullPath = document.getElementById("img1").src;
         // var filename = img.src.replace(/^.*[\\\/]/, '');
     };
+
+
+    $('input[type=range]').on('input', function () {
+        $(this).trigger('change');
+    });
+
+    document.getElementById('noice-threshold').onchange = function(e) {
+        const value = $('#noice-threshold').val();
+        console.log(value);
+        $('#range-label').text('Noise threshold (' + value + '%)');
+    };
     
     document.getElementById('button-read-text').onclick = function(e) {
         
@@ -48,7 +59,8 @@ $(document).ready( function() {
 
         var formData = new FormData();
         formData.append('file', $('#input-image')[0].files[0]);
-        var filename = ($('#input-image')[0].files[0].name);
+        let noiseThreshold = $('#noice-threshold').val() / 100;
+        formData.append('noise', noiseThreshold);
 
         $.ajax({
             url : '/thinning-process',
