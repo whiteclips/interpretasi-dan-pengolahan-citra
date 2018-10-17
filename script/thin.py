@@ -154,12 +154,12 @@ def zhangSuen(imageArr, noise_threshold_percent):
                     (not isNeighborInArray(i, j, cross_candidate))
                 ):
                     current_cross = (i, j)
-                    print('', file=sys.stdout)
-                    print(current_cross, file=sys.stdout)
+                    # print('', file=sys.stdout)
+                    # print(current_cross, file=sys.stdout)
                     cross_candidate.append(current_cross)
                     # cari awal percabangan
                     init_branch = get_init_branch(i, j)
-                    print(init_branch, file=sys.stdout)
+                    # print(init_branch, file=sys.stdout)
                     branches = []
                     max_len_branch = 0
                     
@@ -230,8 +230,8 @@ def zhangSuen(imageArr, noise_threshold_percent):
             if ((arr[i, j] == 1) and (sum(neighbors) == 1)):
                 tip_candidate.append((i, j))
     
-    print("tip", file=sys.stdout)
-    print(tip_candidate, file=sys.stdout)
+    # print("tip", file=sys.stdout)
+    # print(tip_candidate, file=sys.stdout)
 
     # search cross (persimpangan)
     cross_candidate = []
@@ -245,29 +245,29 @@ def zhangSuen(imageArr, noise_threshold_percent):
             ):
                 cross_candidate.append((i, j))
     
-    print("cross", file=sys.stdout)
-    print(cross_candidate, file=sys.stdout)
+    # print("cross", file=sys.stdout)
+    # print(cross_candidate, file=sys.stdout)
 
     # Convert back to original black and white
     res = ((arr == 0).astype(int) * 255)
 
-    temp = '  '
-    for j in range(1, col - 1):
-        temp = temp + str(j%9) + ' '
-    print(temp, file=sys.stdout)
-    # print to log
-    for i in range(1, row - 1):
-        temp = str(i%9) + ' '
-        for j in range(1, col - 1):
-            if (res[i, j] == 0):
-                temp = temp + 'x '
-            else:
-                temp = temp + '- '
+    # temp = '  '
+    # for j in range(1, col - 1):
+    #     temp = temp + str(j%9) + ' '
+    # print(temp, file=sys.stdout)
+    # # print to log
+    # for i in range(1, row - 1):
+    #     temp = str(i%9) + ' '
+    #     for j in range(1, col - 1):
+    #         if (res[i, j] == 0):
+    #             temp = temp + 'x '
+    #         else:
+    #             temp = temp + '- '
 
-        print(temp, file=sys.stdout)
+    #     print(temp, file=sys.stdout)
     
-    print("max : " + str(max_len_branch_global), file=sys.stdout)
-    print("total : " + str(total_len_path), file=sys.stdout)
+    # print("max : " + str(max_len_branch_global), file=sys.stdout)
+    # print("total : " + str(total_len_path), file=sys.stdout)
 
     return (res, tip_candidate, cross_candidate)
 
