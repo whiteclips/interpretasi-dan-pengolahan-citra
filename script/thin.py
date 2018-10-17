@@ -76,27 +76,6 @@ def zhangSuen(imageArr, noise_threshold_percent):
                 result.append(neighbor_coordinate_arr[n])
         return result
 
-    # def isCircularPoint(i, j, path, cross):
-    #     neighbor_val_arr = getNeighboursValue(i, j)
-    #     neighbor_coordinate_arr = getNeighboursCoordinat(i, j)
-    #     neighbor_in_path_count = 0
-    #     for n in neighbor_coordinate_arr:
-    #         if (
-    #             neighbor_val_arr[n] and
-    #             (
-    #                 neighbor_coordinate_arr[n] in init_branch or
-    #                 neighbor_coordinate_arr[n] == cross or
-    #                 neighbor_coordinate_arr[n] in get_init_branch(cross[0],cross[1])
-    #             )
-    #         ):
-    #             neighbor_in_path_count += 1
-
-    #     if (neighbor_in_path_count > 1):
-    #         return True
-    #     else:
-    #         return False
-
-
     marked_1, marked_2 = 1, 1
     while marked_1 or marked_2:
         row, col = arr.shape
@@ -162,6 +141,8 @@ def zhangSuen(imageArr, noise_threshold_percent):
     # noise_threshold_percent = 0.07
     visited = []
     cross_candidate = []
+    max_len_branch_global = 0
+    total_len_path = 0
     for i in range(1, row - 1):
         for j in range(1, col - 1):
             if (arr[i, j] == 1) and (i, j) not in visited:
@@ -184,30 +165,25 @@ def zhangSuen(imageArr, noise_threshold_percent):
                     
                     for b in init_branch:
                         # telusuri semua cabang
-                        print("====", file=sys.stdout)
+                        # print("====", file=sys.stdout)
                         current_pixel = b
                         branch_path = []
                         branch_path.append(current_pixel)
                         stop = False
                         while not stop:
-                            print(current_pixel, file=sys.stdout)
+                            # print(current_pixel, file=sys.stdout)
                             neighbors_val = getNeighboursValue(current_pixel[0], current_pixel[1])
                             neighbors_coord = getNeighboursCoordinat(current_pixel[0], current_pixel[1])
                             if (sum(neighbors_val) == 1) :
                                 stop = True
-                                print("stop1", file=sys.stdout)
+                                # print("stop1", file=sys.stdout)
                             elif (sum(neighbors_val) >= 4):
                                 stop = True
-                                print("stop2", file=sys.stdout)
+                                # print("stop2", file=sys.stdout)
                             else:
-                                # print("jumlah tetangga : " + str(sum(neighbors_val)), file=sys.stdout)
                                 n = 0
                                 isNextExist = False
                                 while not isNextExist and n < 8:
-                                    # print("kondisi 1 : " + str(neighbors_val[n]), file=sys.stdout)
-                                    # print("kondisi 2 : " + str(neighbors_coord[n] not in init_branch), file=sys.stdout)
-                                    # print("kondisi 3 : " + str(neighbors_coord[n] not in branch_path), file=sys.stdout)
-                                    # print("kondisi 4 : " + str(neighbors_coord[n] != current_cross), file=sys.stdout)
                                     if (
                                         neighbors_val[n] and
                                         neighbors_coord[n] not in init_branch and
@@ -229,12 +205,17 @@ def zhangSuen(imageArr, noise_threshold_percent):
                         if (max_len_branch < len(branch_path)):
                             max_len_branch = len(branch_path)
 
+                        if (max_len_branch_global < len(branch_path)):
+                            max_len_branch_global = len(branch_path)
+
+                        total_len_path += len(branch_path)
+
                     noise_threshold = int(round(noise_threshold_percent * max_len_branch))
-                    print("threshold: " + str(noise_threshold), file=sys.stdout)
+                    # print("threshold: " + str(noise_threshold), file=sys.stdout)
                     for branch in branches:
                         if (len(branch) < noise_threshold):
-                            print("Noise", file=sys.stdout)
-                            print(branch, file=sys.stdout)
+                            # print("Noise", file=sys.stdout)
+                            # print(branch, file=sys.stdout)
                             # hapus branch dari arr
                             for b in branch:
                                 arr[b[0], b[1]] = 0
@@ -284,6 +265,9 @@ def zhangSuen(imageArr, noise_threshold_percent):
                 temp = temp + '- '
 
         print(temp, file=sys.stdout)
+    
+    print("max : " + str(max_len_branch_global), file=sys.stdout)
+    print("total : " + str(total_len_path), file=sys.stdout)
 
     return (res, tip_candidate, cross_candidate)
 
@@ -305,32 +289,51 @@ def skeletonizedImage(arrImage, noise_threshold_percent):
 def predict(tips, cross):
     if (len(cross) == 8):
         return '#'
+    elif (len(cross) == 6):
+        if (len(tips) == 4):
+            return '$'
+        else:
+            return 'H atau X atau x'
+    elif (len(cross) == 3):
+        if (len(tips) == 1):
+            return 'g'
+        elif (len(tips) == 3):
+            return 'P atau p'
+        elif (len(tips) == 6):
+            return '*'
+        elif (len(tips) == 5):
+            return '&, f, h, n, y'
+    elif (len(cross) == 2):
+        if (len(tips) == 2):
+            return 'D, a, d, q, ascii(127)'
+        elif (len(tips) == 4):
+            return '+, I, L, T, U, r, t, v'
+    elif (len(cross) == 5):
+        if (len(tips) == 7):
+            return 'K atau m'
+    elif (len(cross) == 1):
+        if (len(tips) == 1):
+            return '4, 6, 9, @, Q, b, e'
+        elif (len(tips) == 2):
+            return 'M, w'
+        elif (len(tips) == 3):
+            return '1, 3, G, J, i, l, u'
+    elif (len(cross) == 4):
+        if (len(tips) == 2):
+            return 'B'
+        elif (len(tips) == 4):
+            return 'A, R'
+        elif (len(tips) == 6):
+            return 'E, F, Y, k'
+    elif (len(cross) == 0):
+        if (len(tips) == 0):
+            return '0, O, o'
+        elif (len(tips) == 2):
+            return '! % \' ( ) , - / 2 5 7 8 < > ? C N S V W Z [ \\ ] ^ _ ` c j s z { | } ~'
+        elif (len(tips) == 4):
+            return '" atau ='
     else:
         return 'unknown'
-
-    # if (len(tips) == 0):
-    #     if (len(cross) == 0):
-    #         return 0
-    #     else :
-    #         return 8
-    # elif (tips[0] == (29, 6) and tips[1] == (59, 25)):
-    #     return 1
-    # elif (tips[0] == (26, 10) and tips[1] == (67, 40)):
-    #     return 2
-    # elif (tips[0] == (21, 9) and tips[1] == (38, 22) and tips[2] == (58, 11)):
-    #     return 3
-    # elif (tips[0] == (10, 33) and tips[1] == (49, 40) and tips[2] == (60, 32)):
-    #     return 4
-    # elif (tips[0] == (11, 36) and tips[1] == (56, 12)):
-    #     return 5
-    # elif (tips[0] == (13, 36)):
-    #     return 6
-    # elif (tips[0] == (11, 10) and tips[1] == (61, 16)):
-    #     return 7
-    # elif (tips[0] == (55, 13)):
-    #     return 9
-
-
 
 if __name__ == "__main__":
     arr = getSegmentedImageArray("./res/arial.png")
