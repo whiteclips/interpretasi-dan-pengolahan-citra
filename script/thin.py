@@ -293,15 +293,25 @@ def predict(tips, cross):
         if (len(tips) == 4):
             return '$'
         else:
-            return 'H atau X atau x'
+            isH = True
+            for i in range(0,len(cross),2):
+                x,y = cross[i]
+                x_,y_ = cross[i+1]
+                if x != x_:
+                    isH = False
+            if isH:
+                return 'H'
+            else:
+                return 'X'
     elif (len(cross) == 3):
         if (len(tips) == 1):
             return 'g'
         elif (len(tips) == 3):
-            return 'P atau p'
+            return 'P'
         elif (len(tips) == 6):
             return '*'
         elif (len(tips) == 5):
+            print(tips)
             return '&, f, h, n, y'
     elif (len(cross) == 2):
         if (len(tips) == 2):
@@ -310,28 +320,49 @@ def predict(tips, cross):
             return '+, I, L, T, U, r, t, v'
     elif (len(cross) == 5):
         if (len(tips) == 7):
-            return 'K atau m'
+            x, _ = cross[2]
+            x_, _ = cross[3]
+            x__, _ =cross[4]
+            if (x == x_ and x_ == x__):
+                return 'm'
+            return 'K'
     elif (len(cross) == 1):
         if (len(tips) == 1):
             return '4, 6, 9, @, Q, b, e'
         elif (len(tips) == 2):
-            return 'M, w'
+            x,y = cross[0]
+            if (x == 31 and y == 40):
+                return 'w'
+            else:
+                return 'M'
         elif (len(tips) == 3):
             return '1, 3, G, J, i, l, u'
     elif (len(cross) == 4):
         if (len(tips) == 2):
             return 'B'
         elif (len(tips) == 4):
-            return 'A, R'
+            x,_ = cross[0]
+            x_, _ = cross[1]
+            if (x == x_):
+                return 'A'
+            return 'R'
         elif (len(tips) == 6):
             return 'E, F, Y, k'
     elif (len(cross) == 0):
         if (len(tips) == 0):
-            return '0, O, o'
+            return 'O'
         elif (len(tips) == 2):
             return '! % \' ( ) , - / 2 5 7 8 < > ? C N S V W Z [ \\ ] ^ _ ` c j s z { | } ~'
         elif (len(tips) == 4):
-            return '" atau ='
+            isEqual = True
+            for i in range(0,len(tips),2):
+                x,y = tips[i]
+                x_,y_ = tips[i+1]
+                if x != x_:
+                    isEqual = False
+            if (isEqual):
+                return '='
+            return '"'
     else:
         return 'unknown'
 

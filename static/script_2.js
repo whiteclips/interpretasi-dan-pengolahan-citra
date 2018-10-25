@@ -28,6 +28,8 @@ function getImgDataFrom(canvas_id) {
 }
 
 function drawHistogram(rgbArray, afterRgbArray) {
+    console.log(rgbArray);
+    console.log(afterRgbArray);
     var x = [];
     var redColor = [];
     var greenColor = [];
@@ -50,11 +52,15 @@ function drawHistogram(rgbArray, afterRgbArray) {
     Plotly.newPlot('histogram-red-before', [{ ...trace, y: rgbArray['red'], marker: { color: redColor } }]);
     Plotly.newPlot('histogram-green-before', [{ ...trace, y: rgbArray['green'], marker: { color: greenColor } }]);
     Plotly.newPlot('histogram-blue-before', [{ ...trace, y: rgbArray['blue'], marker: { color: blueColor } }]);
-    Plotly.newPlot('histogram-gray-before', [{ ...trace, y: rgbArray['gray'], marker: { color: grayColor } }]);
+
+    // Plotly.newPlot('histogram-red-after', [{ ...trace, y: rgbArray['red'], marker: { color: redColor } }]);
+    // Plotly.newPlot('histogram-green-after', [{ ...trace, y: rgbArray['green'], marker: { color: greenColor } }]);
+    // Plotly.newPlot('histogram-blue-after', [{ ...trace, y: rgbArray['blue'], marker: { color: blueColor } }]);
+
     Plotly.newPlot('histogram-red-after', [{ ...trace, y: afterRgbArray['red'], marker: { color: redColor } }]);
     Plotly.newPlot('histogram-green-after', [{ ...trace, y: afterRgbArray['green'], marker: { color: greenColor } }]);
     Plotly.newPlot('histogram-blue-after', [{ ...trace, y: afterRgbArray['blue'], marker: { color: blueColor } }]);
-    Plotly.newPlot('histogram-gray-after', [{ ...trace, y: afterRgbArray['gray'], marker: {color: 'rgb(70,70,70)'}}]);
+    // Plotly.newPlot('histogram-gray-after', [{ ...trace, y: afterRgbArray['gray'], marker: {color: 'rgb(70,70,70)'}}]);
 
 }
 
