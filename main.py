@@ -1,9 +1,10 @@
 from flask import Flask, render_template, Response, request, flash, jsonify
 from script.parseImg import *
 from script.thin import *
+import script.hand_written as hw
 from werkzeug.utils import secure_filename
 import uuid
-
+import traceback
 import json
 
 app = Flask(__name__)
@@ -62,6 +63,31 @@ def text_reader_process():
 @app.route('/thinning')
 def thinning():
     return render_template('thinning.html')
+
+@app.route('/hand_recognition')
+def hand_recognition():
+    return render_template('hand_recognition.html')
+
+@app.route('/hand_recognition', methods=['POST'])
+def hand_recognition_process():
+    try:
+        f = request.files['file']
+        pixel_treshold = request.form['pixel-treshold']
+        noise_percentage = request.form['noise']
+        print("Got pixel({}), noise({})".format(pixel_treshold,noise_percentage))
+        if (f):
+            arr = hw.getSegmentedImageArray(f, pixel_treshold)
+            
+            (skeletonized, tips, cross) = hw.skeletonizedImage(arr, float(noise_percentage))
+            prediction = hw.predict(tips, cross)
+            unique_filename = str(uuid.uuid4())
+            path = 'static/dump/' + unique_filename + f.filename
+            Image.fromarray(np.uint8(skeletonized)).save(path)
+
+            return jsonify({'path' : path, 'prediction' : prediction})
+    except:
+        traceback.print_exc(file=sys.stdout)
+        return jsonify({'path' : "", 'prediction' : "Something Wrong"})
 
 @app.route('/thinning-process', methods=['POST'])
 def thinning_process():

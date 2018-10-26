@@ -245,15 +245,39 @@ def zhangSuen(imageArr, noise_threshold_percent):
             ):
                 cross_candidate.append((i, j))
     
-    res = ((arr == 0).astype(int) * 255)
+    # print("cross", file=sys.stdout)
+    # print(cross_candidate, file=sys.stdout)
 
+    # Convert back to original black and white
+    res = ((arr == 0).astype(int) * 255)
+    # print("total : " + str(total_len_path), file=sys.stdout)
 
     return (res, tip_candidate, cross_candidate)
 
 
-def getSegmentedImageArray(imgPath):
+def predict(tips, cross):
+    t = len(tips)
+    c = len(cross)
+    print("Tips: ",tips)
+    print("Cross: ",cross)
+    print("Tips({}), Cross({})".format(t,c))
+    if (c == 1):
+        if (t == 1):  return "a, b, d, e, g, p, q"
+        elif (t == 2): return "l, n, r"
+        elif (t == 3): return "f, h, m, w, y"
+        elif (t == 4): return "k, x, z"
+        else: return "UKNOWN"
+    elif (t == 0):
+        if (t == 0): return "o"
+        elif (t == 2): return "c, s, u, v"
+        elif (t == 3): return "i, j, t"
+        else: return "UKNOWN"
+    else: return "UKNOWN"
+
+
+def getSegmentedImageArray(imgPath, treshold ):
     res = np.array(Image.open(imgPath).convert('L'))
-    res = ((res == 255) * 255).astype(int)
+    res = ((res >= int(treshold)) * 255).astype(int)
     return res
 
 
@@ -262,93 +286,14 @@ def showImage(arrImage):
 
 def skeletonizedImage(arrImage, noise_threshold_percent):
   (newImg, tips, cross) = zhangSuen(arrImage, noise_threshold_percent)
-  print(newImg)
   res = ((arrImage == newImg) * 255).astype(int)
   return (res, tips, cross)
 
-def predict(tips, cross):
-    if (len(cross) == 8):
-        return '#'
-    elif (len(cross) == 6):
-        if (len(tips) == 4):
-            return '$'
-        else:
-            isH = True
-            for i in range(0,len(cross),2):
-                x,y = cross[i]
-                x_,y_ = cross[i+1]
-                if x != x_:
-                    isH = False
-            if isH:
-                return 'H'
-            else:
-                return 'X'
-    elif (len(cross) == 3):
-        if (len(tips) == 1):
-            return 'g'
-        elif (len(tips) == 3):
-            return 'P'
-        elif (len(tips) == 6):
-            return '*'
-        elif (len(tips) == 5):
-            print(tips)
-            return '&, f, h, n, y'
-    elif (len(cross) == 2):
-        if (len(tips) == 2):
-            return 'D, a, d, q, ascii(127)'
-        elif (len(tips) == 4):
-            return '+, I, L, T, U, r, t, v'
-    elif (len(cross) == 5):
-        if (len(tips) == 7):
-            x, _ = cross[2]
-            x_, _ = cross[3]
-            x__, _ =cross[4]
-            if (x == x_ and x_ == x__):
-                return 'm'
-            return 'K'
-    elif (len(cross) == 1):
-        if (len(tips) == 1):
-            return '4, 6, 9, @, Q, b, e'
-        elif (len(tips) == 2):
-            x,y = cross[0]
-            if (x == 31 and y == 40):
-                return 'w'
-            else:
-                return 'M'
-        elif (len(tips) == 3):
-            return '1, 3, G, J, i, l, u'
-    elif (len(cross) == 4):
-        if (len(tips) == 2):
-            return 'B'
-        elif (len(tips) == 4):
-            x,_ = cross[0]
-            x_, _ = cross[1]
-            if (x == x_):
-                return 'A'
-            return 'R'
-        elif (len(tips) == 6):
-            return 'E, F, Y, k'
-    elif (len(cross) == 0):
-        if (len(tips) == 0):
-            return 'O'
-        elif (len(tips) == 2):
-            return '! % \' ( ) , - / 2 5 7 8 < > ? C N S V W Z [ \\ ] ^ _ ` c j s z { | } ~'
-        elif (len(tips) == 4):
-            isEqual = True
-            for i in range(0,len(tips),2):
-                x,y = tips[i]
-                x_,y_ = tips[i+1]
-                if x != x_:
-                    isEqual = False
-            if (isEqual):
-                return '='
-            return '"'
-    else:
-        return 'unknown'
 
 if __name__ == "__main__":
-    arr = getSegmentedImageArray("./res/arial.png")
+    arr = getSegmentedImageArray("./res/hand_written/a.png")
     skeletonized, tips, cross = skeletonizedImage(arr, 0.08)
+    print("Tips : {} .  Cross : {}".format(tips,cross))
     # showImage(arr)
     # showImage(newImg)
     showImage(skeletonized)
