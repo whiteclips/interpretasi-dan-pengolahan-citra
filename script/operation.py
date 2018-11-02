@@ -198,5 +198,6 @@ def preprocess_image(input_image, type_of_operation):
     unique_filename = str(uuid.uuid4()) + '.' + image.format
     path = 'static/dump/' + unique_filename
     image.save(path)
+    final_path = "http://pengcit.whiteclips.me/" + path
 
-    return path
+    return final_path
