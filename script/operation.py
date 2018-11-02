@@ -161,8 +161,7 @@ def preprocess_image(input_image, type_of_operation):
         elif type_of_operation == DIFFERENCE:
             result_gray_array = do_operation_difference(gray_array)
         else:
-            print("Type of operation not recognized.", file=sys.stdout)
-            # sys.exit()
+            pass
         for i in range(width):
             for j in range(height):
                 image.putpixel((i, j), result_gray_array[i][j])
@@ -191,8 +190,7 @@ def preprocess_image(input_image, type_of_operation):
             result_green_array = do_operation_difference(green_array)
             result_blue_array = do_operation_difference(blue_array)
         else:
-            print("Type of operation not recognized.", file=sys.stdout)
-            # sys.exit()
+            pass
         for i in range(width):
             for j in range(height):
                 image.putpixel((i, j), (result_red_array[i][j], result_green_array[i][j], result_blue_array[i][j]))
