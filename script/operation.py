@@ -196,7 +196,6 @@ def preprocess_image(input_image, type_of_operation):
                 image.putpixel((i, j), (result_red_array[i][j], result_green_array[i][j], result_blue_array[i][j]))
     
     unique_filename = str(uuid.uuid4()) + '.' + image.format
-    print(unique_filename, file=sys.stdout)
     path = 'static/dump/' + unique_filename
     image.save(path)
 
