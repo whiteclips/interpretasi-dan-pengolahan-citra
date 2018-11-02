@@ -1,6 +1,7 @@
 import numpy as np
 from PIL import Image
 import sys
+import uuid
 
 GRADIENT = 0
 MEDIAN = 1
@@ -80,9 +81,9 @@ def do_operation_median(array):
             point_7 = normalize_point_in_array(i, j + 1, array)
             point_8 = normalize_point_in_array(i + 1, j + 1, array)
             values = [point_1, point_2, point_3, point_4, point_5, point_6, point_7, point_8]
-            print values
-            print get_median_of_array(values)
-            sys.exit()
+            # print values
+            # print get_median_of_array(values)
+            # sys.exit()
             result_array[i][j] = get_median_of_array(values)
     # for j in range(10):
     #     line = ""
@@ -127,19 +128,21 @@ def do_operation(array, type_of_operation):
     elif type_of_operation == DIFFERENCE:
         return do_operation_difference(array)
 
-if __name__ == "__main__":
-    if (len(sys.argv) < 3):
-        print "Please provide the arguments."
-        print "RUN INSTRUCTION"
-        print "python operation.py file_name_of_image type_of_operation"
-        print "file_name_of_image, for example, is image_bird.jpg"
-        print "type_of_operation is either 0, 1, or 2. 0: GRADIENT, 1: MEDIAN, 2: DIFFERENCE" 
-        sys.exit()
+def preprocess_image(input_image, type_of_operation):
+    # if (len(sys.argv) < 3):
+    #     print "Please provide the arguments."
+    #     print "RUN INSTRUCTION"
+    #     print "python operation.py file_name_of_image type_of_operation"
+    #     print "file_name_of_image, for example, is image_bird.jpg"
+    #     print "type_of_operation is either 0, 1, or 2. 0: GRADIENT, 1: MEDIAN, 2: DIFFERENCE" 
+    #     sys.exit()
 
-    file_name = sys.argv[1]
-    type_of_operation = int(sys.argv[2])
+    # file_name = sys.argv[1]
+    # type_of_operation = int(sys.argv[2])
+    
+    # type_of_operation = operation
 
-    image = Image.open(open(file_name, "rb"))
+    image = input_image
     pixel = image.load()
     width = image.size[0]
     height = image.size[1]
@@ -158,8 +161,8 @@ if __name__ == "__main__":
         elif type_of_operation == DIFFERENCE:
             result_gray_array = do_operation_difference(gray_array)
         else:
-            print "Type of operation not recognized."
-            sys.exit()
+            print("Type of operation not recognized.", file=sys.stdout)
+            # sys.exit()
         for i in range(width):
             for j in range(height):
                 image.putpixel((i, j), result_gray_array[i][j])
@@ -188,10 +191,15 @@ if __name__ == "__main__":
             result_green_array = do_operation_difference(green_array)
             result_blue_array = do_operation_difference(blue_array)
         else:
-            print "Type of operation not recognized."
-            sys.exit()
+            print("Type of operation not recognized.", file=sys.stdout)
+            # sys.exit()
         for i in range(width):
             for j in range(height):
                 image.putpixel((i, j), (result_red_array[i][j], result_green_array[i][j], result_blue_array[i][j]))
     
-    image.save("output_" + file_name)
+    unique_filename = str(uuid.uuid4()) + '.' + image.format
+    print(unique_filename, file=sys.stdout)
+    path = 'static/dump/' + unique_filename
+    image.save(path)
+
+    return path

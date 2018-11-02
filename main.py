@@ -2,10 +2,13 @@ from flask import Flask, render_template, Response, request, flash, jsonify
 from script.parseImg import *
 from script.thin import *
 import script.hand_written as hw
+import script.operation as opt
 from werkzeug.utils import secure_filename
 import uuid
 import traceback
 import json
+import io
+from PIL import Image
 
 app = Flask(__name__)
 
@@ -104,3 +107,16 @@ def thinning_process():
         Image.fromarray(np.uint8(skeletonized)).save(path)
 
         return jsonify({'path' : path, 'prediction' : prediction})
+
+@app.route('/preprocessing')
+def preprocessing():
+    return render_template('preprocessing.html')
+
+@app.route('/preprocess_image', methods=['POST'])
+def preprocess_image():
+    f = request.files['file']
+    if (f):
+        method = int(request.form['method'])
+        image = Image.open(io.BytesIO(f.read()))
+        path = opt.preprocess_image(image, method)
+        return jsonify({'path' : path})
