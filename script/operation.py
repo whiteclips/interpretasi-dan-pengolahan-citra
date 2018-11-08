@@ -2,10 +2,18 @@ import numpy as np
 from PIL import Image
 import sys
 import uuid
+import math
 
 GRADIENT = 0
 MEDIAN = 1
 DIFFERENCE = 2
+PREWITT = 3
+SOBEL = 4
+ROBERTS = 5
+FREICHEN = 6
+CUSTOM = 7
+
+
 
 def get_median_of_array(array):
     array.sort()
@@ -120,6 +128,68 @@ def do_operation_difference(array):
     #     print line
     return result_array
 
+def do_kernel_op(array, OP_ARRAYS):
+    arr = np.array(array)
+    new_arr = arr.copy()
+
+    w,h = arr.shape
+    print("Array :")
+    print("ROW : {}, COL: {}".format(arr.shape[0], arr.shape[1]))
+    print(OP_ARRAYS[0])
+    print(OP_ARRAYS[1])
+    padding_horizontal = np.zeros((1,arr.shape[1]))
+    arr = np.vstack((arr,padding_horizontal))
+    arr = np.vstack((padding_horizontal,arr))
+    padding_vertical = np.zeros((arr.shape[0],1))
+    arr = np.hstack((arr,padding_vertical))
+    arr = np.hstack((padding_vertical,arr))
+
+    # windowing
+    KERN_SIZE = OP_ARRAYS[0].shape[0]
+    row_iter = arr.shape[0]-(2) # 2 adalah padding
+    col_iter = arr.shape[1]-(2) # 2 adalah padding
+    for r in range(0,row_iter):
+        for c in range(0,col_iter):
+            curr_kern = arr[r:r+KERN_SIZE, c:c+KERN_SIZE]
+
+            g_res = []
+            for op in OP_ARRAYS:
+                g_res.append(np.sum(curr_kern * op)) 
+
+            g = np.sqrt(np.sum(np.array(g_res)**2))
+            new_arr[r,c] = g
+
+    return new_arr
+    
+def do_prewitt(array):
+    MATRIX = np.array([[1,0,-1],[1,0,-1],[1,0,-1]])
+    return do_kernel_op(array, [MATRIX, np.rot90(MATRIX)])
+
+def do_sobel(array):
+    MATRIX = np.array([[1,0,-1],[2,0,-2],[1,0,-1]])
+    return do_kernel_op(array, [MATRIX,np.rot90(MATRIX)])
+
+def do_roberts(array):
+    MATRIX = np.array([[1,0],[0,-1]])
+    return do_kernel_op(array, [MATRIX,np.rot90(MATRIX)])
+
+def do_freichen(array):
+    s_two = np.sqrt(2)
+    M_1 = np.array([[1,0,-1],[s_two,0,-s_two],[1,0,-1]])
+    M_2 = np.rot90(M_1)
+    M_3 = np.array([[s_two,-1,0],[-1,0,1],[0,1,-s_two]])
+    M_4 = np.rot90(M_3)
+    M_5 = np.array([[0,1,0],[-1,0,-1],[0,1,0]])
+    M_6 = np.array([[-1,0,1],[0,0,0],[1,0,-1]])
+    M_7 = np.array([[1,-2,1],[-2,4,-2],[1,-2,1]])
+    M_8 = np.array([[-2,1,-2],[1,4,1],[-2,1,-2]])
+    M_9 = np.array([[1,1,1],[1,1,1],[1,1,1]])
+    matrixes = [M_1,M_2,M_3,M_4,M_5,M_6,M_7,M_8,M_9]
+
+    return do_kernel_op(array, matrixes)
+
+    
+
 def do_operation(array, type_of_operation):
     if type_of_operation == GRADIENT:
         return do_operation_gradient(array)
@@ -127,6 +197,16 @@ def do_operation(array, type_of_operation):
         return do_operation_median(array)
     elif type_of_operation == DIFFERENCE:
         return do_operation_difference(array)
+    elif type_of_operation == PREWITT:
+        return do_prewitt(array)
+    elif type_of_operation == SOBEL:
+        return do_sobel(array)
+    elif type_of_operation == ROBERTS:
+        return do_roberts(array)
+    elif type_of_operation == FREICHEN:
+        return do_freichen(array)
+
+
 
 def preprocess_image(input_image, type_of_operation):
     # if (len(sys.argv) < 3):
@@ -146,7 +226,7 @@ def preprocess_image(input_image, type_of_operation):
     pixel = image.load()
     width = image.size[0]
     height = image.size[1]
-    
+    print("Initial w x h : {} x {} ".format(width, height))
     try:
         value = int(pixel[0, 0])
         gray_array = [[None for y in range(height) ] for x in range(width)]    
@@ -160,6 +240,14 @@ def preprocess_image(input_image, type_of_operation):
             result_gray_array = do_operation_median(gray_array)
         elif type_of_operation == DIFFERENCE:
             result_gray_array = do_operation_difference(gray_array)
+        elif type_of_operation == PREWITT:
+            result_gray_array = do_prewitt(gray_array)
+        elif type_of_operation == SOBEL:
+            result_gray_array = do_sobel(gray_array)
+        elif type_of_operation == ROBERTS:
+            result_gray_array = do_roberts(gray_array)
+        elif type_of_operation == FREICHEN:
+            result_gray_array = do_freichen(gray_array)
         else:
             pass
         for i in range(width):
@@ -169,6 +257,7 @@ def preprocess_image(input_image, type_of_operation):
         red_array = [[None for y in range(height) ] for x in range(width)]
         green_array = [[None for y in range(height) ] for x in range(width)]
         blue_array = [[None for y in range(height) ] for x in range(width)]
+        print(pixel[0,0])
         for i in range(width):
             for j in range(height):
                 red = pixel[i,j][0]
@@ -189,6 +278,22 @@ def preprocess_image(input_image, type_of_operation):
             result_red_array = do_operation_difference(red_array)
             result_green_array = do_operation_difference(green_array)
             result_blue_array = do_operation_difference(blue_array)
+        elif type_of_operation == PREWITT:
+            result_red_array = do_prewitt(red_array)
+            result_green_array = do_prewitt(green_array)
+            result_blue_array = do_prewitt(blue_array)
+        elif type_of_operation == SOBEL:
+            result_red_array = do_sobel(red_array)
+            result_green_array = do_sobel(green_array)
+            result_blue_array = do_sobel(blue_array)
+        elif type_of_operation == ROBERTS:
+            result_red_array = do_roberts(red_array)
+            result_green_array = do_roberts(green_array)
+            result_blue_array = do_roberts(blue_array)
+        elif type_of_operation == FREICHEN:
+            result_red_array = do_freichen(red_array)
+            result_green_array = do_freichen(green_array)
+            result_blue_array = do_freichen(blue_array)
         else:
             pass
         for i in range(width):
@@ -198,6 +303,5 @@ def preprocess_image(input_image, type_of_operation):
     unique_filename = str(uuid.uuid4()) + '.' + image.format
     path = 'static/dump/' + unique_filename
     image.save(path)
-    final_path = "http://pengcit.whiteclips.me/" + path
 
-    return final_path
+    return path
