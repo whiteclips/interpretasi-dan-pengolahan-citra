@@ -133,10 +133,10 @@ def do_kernel_op(array, OP_ARRAYS):
     new_arr = arr.copy()
 
     w,h = arr.shape
-    print("Array :")
-    print("ROW : {}, COL: {}".format(arr.shape[0], arr.shape[1]))
-    print(OP_ARRAYS[0])
-    print(OP_ARRAYS[1])
+    # print("Array :")
+    # print("ROW : {}, COL: {}".format(arr.shape[0], arr.shape[1]))
+    # print(OP_ARRAYS[0])
+    # print(OP_ARRAYS[1])
     padding_horizontal = np.zeros((1,arr.shape[1]))
     arr = np.vstack((arr,padding_horizontal))
     arr = np.vstack((padding_horizontal,arr))
@@ -175,16 +175,17 @@ def do_roberts(array):
 
 def do_freichen(array):
     s_two = np.sqrt(2)
-    M_1 = np.array([[1,0,-1],[s_two,0,-s_two],[1,0,-1]])
+    M_1 = np.array([[1,0,-1],[s_two,0,-s_two],[1,0,-1]]) * (1/(2*s_two))
     M_2 = np.rot90(M_1)
-    M_3 = np.array([[s_two,-1,0],[-1,0,1],[0,1,-s_two]])
-    M_4 = np.rot90(M_3)
-    M_5 = np.array([[0,1,0],[-1,0,-1],[0,1,0]])
-    M_6 = np.array([[-1,0,1],[0,0,0],[1,0,-1]])
-    M_7 = np.array([[1,-2,1],[-2,4,-2],[1,-2,1]])
-    M_8 = np.array([[-2,1,-2],[1,4,1],[-2,1,-2]])
-    M_9 = np.array([[1,1,1],[1,1,1],[1,1,1]])
-    matrixes = [M_1,M_2,M_3,M_4,M_5,M_6,M_7,M_8,M_9]
+    # M_3 = np.array([[s_two,-1,0],[-1,0,1],[0,1,-s_two]]) * (1/(2*s_two))
+    # M_4 = np.rot90(M_3)
+    # M_5 = np.array([[0,1,0],[-1,0,-1],[0,1,0]]) * (1/2)
+    # M_6 = np.array([[-1,0,1],[0,0,0],[1,0,-1]]) * (1/2)
+    # M_7 = np.array([[1,-2,1],[-2,4,-2],[1,-2,1]]) * (1/6)
+    # M_8 = np.array([[-2,1,-2],[1,4,1],[-2,1,-2]]) * (1/6)
+    # M_9 = np.array([[1,1,1],[1,1,1],[1,1,1]]) * (1/3)
+    # matrixes = [M_1,M_2,M_3,M_4,M_5,M_6,M_7,M_8,M_9]
+    matrixes = [M_1,M_2]
 
     return do_kernel_op(array, matrixes)
 
@@ -226,7 +227,6 @@ def preprocess_image(input_image, type_of_operation):
     pixel = image.load()
     width = image.size[0]
     height = image.size[1]
-    print("Initial w x h : {} x {} ".format(width, height))
     try:
         value = int(pixel[0, 0])
         gray_array = [[None for y in range(height) ] for x in range(width)]    
@@ -252,12 +252,12 @@ def preprocess_image(input_image, type_of_operation):
             pass
         for i in range(width):
             for j in range(height):
-                image.putpixel((i, j), result_gray_array[i][j])
+                image.putpixel((i, j), int(result_gray_array[i][j]))
+        print("Done putting pixel on single channel")
     except:
         red_array = [[None for y in range(height) ] for x in range(width)]
         green_array = [[None for y in range(height) ] for x in range(width)]
         blue_array = [[None for y in range(height) ] for x in range(width)]
-        print(pixel[0,0])
         for i in range(width):
             for j in range(height):
                 red = pixel[i,j][0]
@@ -299,6 +299,7 @@ def preprocess_image(input_image, type_of_operation):
         for i in range(width):
             for j in range(height):
                 image.putpixel((i, j), (result_red_array[i][j], result_green_array[i][j], result_blue_array[i][j]))
+        print("Done putting pixel on 3 channel")
     
     unique_filename = str(uuid.uuid4()) + '.' + image.format
     path = 'static/dump/' + unique_filename
