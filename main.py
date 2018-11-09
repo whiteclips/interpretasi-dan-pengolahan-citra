@@ -117,6 +117,9 @@ def preprocess_image():
     f = request.files['file']
     if (f):
         method = int(request.form['method'])
+        m1 = request.form['matrix1'].split(",")
+        m2 = request.form['matrix2'].split(",")
+
         image = Image.open(io.BytesIO(f.read()))
-        path = opt.preprocess_image(image, method)
+        path = opt.preprocess_image(image, method, m1, m2)
         return jsonify({'path' : path})

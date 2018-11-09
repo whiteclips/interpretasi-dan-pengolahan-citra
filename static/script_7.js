@@ -29,6 +29,13 @@ $(document).ready( function() {
         }
     };
 
+    document.getElementById('preprocess-method').onchange = function(e) {
+        if ($('#preprocess-method').val() == 7) {
+            $('#input-custom').css('display','block');
+            $('#input-custom-2').css('display','block');
+        }
+    };
+
     // $('input[type=range]').on('input', function () {
     //     $(this).trigger('change');
     // });
@@ -64,6 +71,24 @@ $(document).ready( function() {
         var formData = new FormData();
         formData.append('file', $('#input-image')[0].files[0]);
         formData.append('method', $('#preprocess-method').val());
+
+        console.log("PreprocessMethod val : ", $('#preprocess-method').val());
+        if ($('#preprocess-method').val() == "7") {
+            let matrix1 = $('.m1_val');
+            let matrix2 = $('.m2_val');
+            let m1 = [];
+            let m2 = [];
+            for (var i=0; i< matrix1.length;  i++) {
+                m1.push(parseInt(matrix1[i].value));
+                m2.push(parseInt(matrix2[i].value));
+            }
+
+            console.log("M1: ",m1)
+            console.log("M2: ",m2)
+            formData.append('matrix1', m1);
+            formData.append('matrix2', m2);
+        }
+
         // let pixelTreshold = $('#pixel-treshold').val();
         // formData.append('pixel-treshold', pixelTreshold);
         // let noiceTreshold = $('#noice-threshold').val() / 255;

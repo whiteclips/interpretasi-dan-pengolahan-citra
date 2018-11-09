@@ -164,6 +164,11 @@ def do_kernel_op(array, OP_ARRAYS):
 def do_prewitt(array):
     MATRIX = np.array([[1,0,-1],[1,0,-1],[1,0,-1]])
     return do_kernel_op(array, [MATRIX, np.rot90(MATRIX)])
+    
+def do_custom(array,m1,m2):
+    M1 = np.array(m1,dtype="int").reshape(3,3)
+    M2 = np.array(m2,dtype="int").reshape(3,3)
+    return do_kernel_op(array, [M1,M2])
 
 def do_sobel(array):
     MATRIX = np.array([[1,0,-1],[2,0,-2],[1,0,-1]])
@@ -206,10 +211,12 @@ def do_operation(array, type_of_operation):
         return do_roberts(array)
     elif type_of_operation == FREICHEN:
         return do_freichen(array)
+    elif type_of_operation == CUSTOM:
+        return do_custom(array)
 
 
 
-def preprocess_image(input_image, type_of_operation):
+def preprocess_image(input_image, type_of_operation, m1=None, m2=None):
     # if (len(sys.argv) < 3):
     #     print "Please provide the arguments."
     #     print "RUN INSTRUCTION"
@@ -227,79 +234,89 @@ def preprocess_image(input_image, type_of_operation):
     pixel = image.load()
     width = image.size[0]
     height = image.size[1]
-    try:
-        value = int(pixel[0, 0])
-        gray_array = [[None for y in range(height) ] for x in range(width)]    
-        for i in range(width):
-            for j in range(height):
-                gray = pixel[i,j]
-                gray_array[i][j] = gray
-        if type_of_operation == GRADIENT:
-            result_gray_array = do_operation_gradient(gray_array)
-        elif type_of_operation == MEDIAN:
-            result_gray_array = do_operation_median(gray_array)
-        elif type_of_operation == DIFFERENCE:
-            result_gray_array = do_operation_difference(gray_array)
-        elif type_of_operation == PREWITT:
-            result_gray_array = do_prewitt(gray_array)
-        elif type_of_operation == SOBEL:
-            result_gray_array = do_sobel(gray_array)
-        elif type_of_operation == ROBERTS:
-            result_gray_array = do_roberts(gray_array)
-        elif type_of_operation == FREICHEN:
-            result_gray_array = do_freichen(gray_array)
-        else:
-            pass
-        for i in range(width):
-            for j in range(height):
-                image.putpixel((i, j), int(result_gray_array[i][j]))
-        print("Done putting pixel on single channel")
-    except:
-        red_array = [[None for y in range(height) ] for x in range(width)]
-        green_array = [[None for y in range(height) ] for x in range(width)]
-        blue_array = [[None for y in range(height) ] for x in range(width)]
-        for i in range(width):
-            for j in range(height):
-                red = pixel[i,j][0]
-                red_array[i][j] = red
-                green = pixel[i,j][1]
-                green_array[i][j] = green
-                blue = pixel[i,j][2]
-                blue_array[i][j] = blue
-        if type_of_operation == GRADIENT:
-            result_red_array = do_operation_gradient(red_array)
-            result_green_array = do_operation_gradient(green_array)
-            result_blue_array = do_operation_gradient(blue_array)
-        elif type_of_operation == MEDIAN:
-            result_red_array = do_operation_median(red_array)
-            result_green_array = do_operation_median(green_array)
-            result_blue_array = do_operation_median(blue_array)
-        elif type_of_operation == DIFFERENCE:
-            result_red_array = do_operation_difference(red_array)
-            result_green_array = do_operation_difference(green_array)
-            result_blue_array = do_operation_difference(blue_array)
-        elif type_of_operation == PREWITT:
-            result_red_array = do_prewitt(red_array)
-            result_green_array = do_prewitt(green_array)
-            result_blue_array = do_prewitt(blue_array)
-        elif type_of_operation == SOBEL:
-            result_red_array = do_sobel(red_array)
-            result_green_array = do_sobel(green_array)
-            result_blue_array = do_sobel(blue_array)
-        elif type_of_operation == ROBERTS:
-            result_red_array = do_roberts(red_array)
-            result_green_array = do_roberts(green_array)
-            result_blue_array = do_roberts(blue_array)
-        elif type_of_operation == FREICHEN:
-            result_red_array = do_freichen(red_array)
-            result_green_array = do_freichen(green_array)
-            result_blue_array = do_freichen(blue_array)
-        else:
-            pass
-        for i in range(width):
-            for j in range(height):
-                image.putpixel((i, j), (result_red_array[i][j], result_green_array[i][j], result_blue_array[i][j]))
-        print("Done putting pixel on 3 channel")
+    # try:
+    value = int(pixel[0, 0])
+    gray_array = [[None for y in range(height) ] for x in range(width)]    
+    for i in range(width):
+        for j in range(height):
+            gray = pixel[i,j]
+            gray_array[i][j] = gray
+    if type_of_operation == GRADIENT:
+        result_gray_array = do_operation_gradient(gray_array)
+    elif type_of_operation == MEDIAN:
+        result_gray_array = do_operation_median(gray_array)
+    elif type_of_operation == DIFFERENCE:
+        result_gray_array = do_operation_difference(gray_array)
+    elif type_of_operation == PREWITT:
+        result_gray_array = do_prewitt(gray_array)
+    elif type_of_operation == SOBEL:
+        result_gray_array = do_sobel(gray_array)
+    elif type_of_operation == ROBERTS:
+        result_gray_array = do_roberts(gray_array)
+    elif type_of_operation == FREICHEN:
+        result_gray_array = do_freichen(gray_array)
+    elif type_of_operation == CUSTOM:
+        result_gray_array = do_custom(gray_array, m1, m2)
+    else:
+        pass
+    for i in range(width):
+        for j in range(height):
+            image.putpixel((i, j), int(result_gray_array[i][j]))
+    print("Done putting pixel on single channel")
+    # except:
+    #     red_array = [[None for y in range(height) ] for x in range(width)]
+    #     green_array = [[None for y in range(height) ] for x in range(width)]
+    #     blue_array = [[None for y in range(height) ] for x in range(width)]
+    #     grey_array = [[None for y in range(height) ] for x in range(width)]
+    #     for i in range(width):
+    #         for j in range(height):
+    #             red = pixel[i,j][0]
+    #             green = pixel[i,j][1]
+    #             blue = pixel[i,j][2]
+    #             v = int((red+green+blue)/3)
+    #             grey_array[i][j] = v
+    #             # red_array[i][j] = red
+    #             # green_array[i][j] = green
+    #             # blue_array[i][j] = blue
+    #     if type_of_operation == GRADIENT:
+    #         result_grey_array = do_operation_gradient(grey_array)
+    #         # result_green_array = do_operation_gradient(green_array)
+    #         # result_blue_array = do_operation_gradient(blue_array)
+    #     elif type_of_operation == MEDIAN:
+    #         result_grey_array = do_operation_median(grey_array)
+    #         # result_green_array = do_operation_median(green_array)
+    #         # result_blue_array = do_operation_median(blue_array)
+    #     elif type_of_operation == DIFFERENCE:
+    #         result_grey_array = do_operation_difference(grey_array)
+    #         # result_green_array = do_operation_difference(green_array)
+    #         # result_blue_array = do_operation_difference(blue_array)
+    #     elif type_of_operation == PREWITT:
+    #         result_grey_array = do_prewitt(grey_array)
+    #         # result_green_array = do_prewitt(green_array)
+    #         # result_blue_array = do_prewitt(blue_array)
+    #     elif type_of_operation == SOBEL:
+    #         result_grey_array = do_sobel(grey_array)
+    #         # result_green_array = do_sobel(green_array)
+    #         # result_blue_array = do_sobel(blue_array)
+    #     elif type_of_operation == ROBERTS:
+    #         result_grey_array = do_roberts(grey_array)
+    #         # result_green_array = do_roberts(green_array)
+    #         # result_blue_array = do_roberts(blue_array)
+    #     elif type_of_operation == FREICHEN:
+    #         result_grey_array = do_freichen(grey_array)
+    #         # result_green_array = do_freichen(green_array)
+    #         # result_blue_array = do_freichen(blue_array)
+    #     elif type_of_operation == CUSTOM:
+    #         result_grey_array = do_custom(grey_array, m1, m2)
+    #         # result_green_array = do_custom(green_array)
+    #         # result_blue_array = do_custom(blue_array)
+    #     else:
+    #         pass
+    #     for i in range(width):
+    #         for j in range(height):
+    #             v = result_grey_array[i][j]
+    #             image.putpixel((i, j), (v,v,v))
+    #     print("Done putting pixel on 3 channel")
     
     unique_filename = str(uuid.uuid4()) + '.' + image.format
     path = 'static/dump/' + unique_filename
