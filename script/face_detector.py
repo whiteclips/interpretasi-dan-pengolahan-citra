@@ -100,10 +100,15 @@ class ImageObject:
         self.rgb_matrix = self.image.load()
         self.hsv_matrix = get_hsv_matrix_from_rgb_matrix(self.width, self.height, self.rgb_matrix)
         self.ycbcr_matrix = get_ycbcr_matrix_from_rgb_matrix(self.width, self.height, self.rgb_matrix)
-        pass
+        self.image_output = None
+
+    def process_image(self):
+        self.image_output = mask_image_to_get_face(self, (255, 255, 255))
 
 
 if __name__ == "__main__":
-    image = ImageObject("test_image/image_face_5.jpg")
-    image = mask_image_to_get_face(image, (255, 255, 255))
-    image.save("test_image/out.jpg")
+    image = ImageObject("test_image/image_face_2.jpg")
+    image.image.show("Original Image")
+    image.process_image()
+    image.image_output.show("Output Image")
+    image.image_output.save("test_image/out.jpg")
