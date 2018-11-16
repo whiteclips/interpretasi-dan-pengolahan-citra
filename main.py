@@ -3,6 +3,7 @@ from script.parseImg import *
 from script.thin import *
 import script.hand_written as hw
 import script.operation as opt
+import script.face_detector as fd
 from werkzeug.utils import secure_filename
 import uuid
 import traceback
@@ -122,4 +123,17 @@ def preprocess_image():
 
         image = Image.open(io.BytesIO(f.read()))
         path = opt.preprocess_image(image, method, m1, m2)
+        return jsonify({'path' : path})
+
+@app.route('/face_detection')
+def face_detection():
+    return render_template('face-detection.html')
+
+@app.route('/face_detection_process', methods=['POST'])
+def face_detection_process():
+    f = request.files['file']
+    if (f):
+
+        image = Image.open(io.BytesIO(f.read()))
+        path = fd.face_detect(image)
         return jsonify({'path' : path})

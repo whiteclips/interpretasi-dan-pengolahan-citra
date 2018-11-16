@@ -1,5 +1,6 @@
 from PIL import Image
 import math
+import uuid
 
 
 def get_hsv_from_rgb(red, green, blue):
@@ -93,8 +94,8 @@ def mask_image_to_get_face(image, outer_color, inner_color=None):
 
 
 class ImageObject:
-    def __init__(self, filename):
-        self.image = Image.open(filename)
+    def __init__(self, image):
+        self.image = image
         self.width = self.image.size[0]
         self.height = self.image.size[1]
         self.rgb_matrix = self.image.load()
@@ -102,13 +103,32 @@ class ImageObject:
         self.ycbcr_matrix = get_ycbcr_matrix_from_rgb_matrix(self.width, self.height, self.rgb_matrix)
         self.image_output = None
 
+    # def __init__(self, filename):
+    #     self.image = Image.open(filename)
+    #     self.width = self.image.size[0]
+    #     self.height = self.image.size[1]
+    #     self.rgb_matrix = self.image.load()
+    #     self.hsv_matrix = get_hsv_matrix_from_rgb_matrix(self.width, self.height, self.rgb_matrix)
+    #     self.ycbcr_matrix = get_ycbcr_matrix_from_rgb_matrix(self.width, self.height, self.rgb_matrix)
+    #     self.image_output = None
+
     def process_image(self):
         self.image_output = mask_image_to_get_face(self, (255, 255, 255))
 
 
-if __name__ == "__main__":
-    image = ImageObject("test_image/image_face_2.jpg")
-    image.image.show("Original Image")
-    image.process_image()
-    image.image_output.show("Output Image")
-    image.image_output.save("test_image/out.jpg")
+# if __name__ == "__main__":
+#     image = ImageObject("test_image/image_face_2.jpg")
+#     image.image.show("Original Image")
+#     image.process_image()
+#     image.image_output.show("Output Image")
+#     image.image_output.save("test_image/out.jpg")
+
+def face_detect(image):
+    image_input = ImageObject(image)
+    image_input.process_image()
+
+    unique_filename = str(uuid.uuid4()) + '.' + image.format
+    path = 'static/dump/' + unique_filename
+    image_input.image_output.save(path)
+
+    return path
