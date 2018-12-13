@@ -18,6 +18,7 @@ app = Flask(__name__)
 def index():
     return render_template('index.html')
 
+
 @app.route('/manifest.json')
 def manifest():
     data = json.dumps({
@@ -25,9 +26,9 @@ def manifest():
         "name": "Image Processing App",
         "icons": [
             {
-            "src": "/static/image.png",
-            "type": "image/png",
-            "sizes": "256x256"
+                "src": "/static/image.png",
+                "type": "image/png",
+                "sizes": "256x256"
             }
         ],
         "start_url": "/",
@@ -35,21 +36,26 @@ def manifest():
     })
     return Response(data, mimetype='application/x-web-app-manifest+json')
 
+
 @app.route('/histogram')
 def histogram():
     return render_template('histogram.html')
+
 
 @app.route('/equalization')
 def equalization():
     return render_template('equalization.html')
 
+
 @app.route('/specification')
 def specification():
     return render_template('specification.html')
 
+
 @app.route('/text-reader')
 def text_reader():
     return render_template('text-reader.html')
+
 
 @app.route('/text-reader-process', methods=['POST'])
 def text_reader_process():
@@ -64,13 +70,16 @@ def text_reader_process():
             res += str(d.predict(models))
         return res
 
+
 @app.route('/thinning')
 def thinning():
     return render_template('thinning.html')
 
+
 @app.route('/hand_recognition')
 def hand_recognition():
     return render_template('hand_recognition.html')
+
 
 @app.route('/hand_recognition', methods=['POST'])
 def hand_recognition_process():
@@ -78,20 +87,21 @@ def hand_recognition_process():
         f = request.files['file']
         pixel_treshold = request.form['pixel-treshold']
         noise_percentage = request.form['noise']
-        print("Got pixel({}), noise({})".format(pixel_treshold,noise_percentage))
+        print("Got pixel({}), noise({})".format(pixel_treshold, noise_percentage))
         if (f):
             arr = hw.getSegmentedImageArray(f, pixel_treshold)
-            
+
             (skeletonized, tips, cross) = hw.skeletonizedImage(arr, float(noise_percentage))
             prediction = hw.predict(tips, cross)
             unique_filename = str(uuid.uuid4())
             path = 'static/dump/' + unique_filename + f.filename
             Image.fromarray(np.uint8(skeletonized)).save(path)
 
-            return jsonify({'path' : path, 'prediction' : prediction})
+            return jsonify({'path': path, 'prediction': prediction})
     except:
         traceback.print_exc(file=sys.stdout)
-        return jsonify({'path' : "", 'prediction' : "Something Wrong"})
+        return jsonify({'path': "", 'prediction': "Something Wrong"})
+
 
 @app.route('/thinning-process', methods=['POST'])
 def thinning_process():
@@ -107,11 +117,13 @@ def thinning_process():
         path = 'static/dump/' + unique_filename + f.filename
         Image.fromarray(np.uint8(skeletonized)).save(path)
 
-        return jsonify({'path' : path, 'prediction' : prediction})
+        return jsonify({'path': path, 'prediction': prediction})
+
 
 @app.route('/preprocessing')
 def preprocessing():
     return render_template('preprocessing.html')
+
 
 @app.route('/preprocess_image', methods=['POST'])
 def preprocess_image():
@@ -123,17 +135,18 @@ def preprocess_image():
 
         image = Image.open(io.BytesIO(f.read()))
         path = opt.preprocess_image(image, method, m1, m2)
-        return jsonify({'path' : path})
+        return jsonify({'path': path})
+
 
 @app.route('/face_detection')
 def face_detection():
     return render_template('face-detection.html')
 
+
 @app.route('/face_detection_process', methods=['POST'])
 def face_detection_process():
     f = request.files['file']
     if (f):
-
         image = Image.open(io.BytesIO(f.read()))
         path = fd.face_detect(image)
-        return jsonify({'path' : path})
+        return jsonify({'path': path})
