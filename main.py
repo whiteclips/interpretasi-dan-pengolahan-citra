@@ -178,5 +178,8 @@ def face_recognition_test_process():
     f = request.files['file']
     if (f):
         image = Image.open(io.BytesIO(f.read()))
-        result = fr.predict(image)
-        return jsonify({'label' : result})
+        label_err, result = fr.predict(image)
+        return jsonify({
+            'result' : result,
+            'err_label': label_err
+            });
