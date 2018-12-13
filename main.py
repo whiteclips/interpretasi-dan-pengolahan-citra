@@ -4,6 +4,7 @@ from script.thin import *
 import script.hand_written as hw
 import script.operation as opt
 import script.face_detector as fd
+import script.face_recognition as fr
 from werkzeug.utils import secure_filename
 import uuid
 import traceback
@@ -137,3 +138,32 @@ def face_detection_process():
         image = Image.open(io.BytesIO(f.read()))
         path = fd.face_detect(image)
         return jsonify({'path' : path})
+
+@app.route('/face_recognition')
+def face_recognition():
+    return render_template('face-recognition.html')
+
+@app.route('/face_recognition_train')
+def face_recognition_train():
+    return render_template('face-recognition-train.html')
+
+@app.route('/face_recognition_test')
+def face_recognition_test():
+    return render_template('face-recognition-test.html')
+
+@app.route('/face_recognition_train_process', methods=['POST'])
+def face_recognition_train_process():
+    f = request.files['file']
+    label = request.form['label']
+    if (f):
+        image = Image.open(io.BytesIO(f.read()))
+        fr.train(image, label)
+        return jsonify({'status' : label})
+
+@app.route('/face_recognition_test_process', methods=['POST'])
+def face_recognition_test_process():
+    f = request.files['file']
+    if (f):
+        image = Image.open(io.BytesIO(f.read()))
+        result = fr.predict(image)
+        return jsonify({'label' : result})

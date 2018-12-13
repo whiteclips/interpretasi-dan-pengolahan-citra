@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Face Recognition</title>
+	<!-- Bootstrap CDN -->
+	<!-- Latest compiled and minified CSS -->
+	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+	<!-- jQuery library -->
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+	<!-- Latest compiled JavaScript -->
+	<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+	<!-- Stylesheet -->
+	<link rel="stylesheet" type="text/css" href="../static/style.css">
+	<!-- Meta -->
+	<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+</head>
+
+<body>
+	<div class="page-title">Face Recognition</div>
+	<div class="container">
+		<div class="col-md-12">
+      		<label class="field-title">Upload Image</label>
+			<span class="btn btn-default btn-file">
+				<form enctype="multipart/form-data">
+					Browse Image <input type="file" name="input-image" id="input-image">
+				</form>
+			</span>
+			<!-- <canvas id="myCanvas" style="display: none;"></canvas> -->
+			<br>
+			<div class="col-md-6" style="margin-top: 10px;">
+				<canvas id="before-canvas" style="max-width: 100%"></canvas>
+			</div>
+			<!-- <div class="col-md-6">
+				<canvas id="after-canvas" style="max-width: 100%"></canvas>      
+			</div> -->
+			<br>
+			<label for="image-label">his/her name?</label>
+			<input class="form-control" type="text" id="image-label">
+		</div>
+	</div>
+
+	<br>
+
+	<div class="container">
+		<div class="col-md-6">
+			<button type="button" id="button-train" class="btn btn-success">Train it!</button>
+		</div>
+	</div>
+
+</body>
+<!-- Script -->
+<script src="../static/script_9.js"></script>
+</html>
