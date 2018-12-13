@@ -150,7 +150,6 @@ def face_detection_process():
     if (f):
         image = Image.open(io.BytesIO(f.read()))
         path = fd.face_detect(image)
-<<<<<<< HEAD
         return jsonify({'path' : path})
 
 @app.route('/face_recognition')
@@ -181,6 +180,3 @@ def face_recognition_test_process():
         image = Image.open(io.BytesIO(f.read()))
         result = fr.predict(image)
         return jsonify({'label' : result})
-=======
-        return jsonify({'path': path})
->>>>>>> 98e362d162e628c6553eccd605b349f8e8a6490d
