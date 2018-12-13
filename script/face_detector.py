@@ -458,8 +458,8 @@ def find_subregions_inside_region(image, region, region_info):
 
 
 class ImageObject:
-    def __init__(self, filename):
-        self.original_image = Image.open(filename)
+    def __init__(self, image):
+        self.original_image = image
         self.output_image = self.original_image.copy()
         self.width = self.output_image.size[0]
         self.height = self.output_image.size[1]
@@ -648,10 +648,9 @@ if __name__ == "__main__":
 
 def face_detect(image):
     image_input = ImageObject(image)
-    image_input.process_image()
+    image_input.process_image(0.000)
 
     unique_filename = str(uuid.uuid4()) + '.' + image.format
     path = 'static/dump/' + unique_filename
     image_input.original_image.save(path)
-
     return path
