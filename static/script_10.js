@@ -42,7 +42,7 @@ $(document).ready( function() {
             processData: false,  // tell jQuery not to process the data
             contentType: false,  // tell jQuery not to set contentType
             success : function(data) {
-                $("#result").attr("src",data.result);
+                $("#result").text(data.result);
             },
             error: function() {
                 alert ('Oops, Something went wrong');

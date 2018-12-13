@@ -545,7 +545,7 @@ class ImageObject:
 
         # self.fill_image(regions, regions_info, threshold, color)
 
-        print len(regions)
+        # print len(regions)
         for i in range(len(regions)):
 
             is_face_by_eye = False
@@ -567,14 +567,14 @@ class ImageObject:
             new_subregions_eye, new_subregions_info_eye = select_valid_subregion_eye(largest_region_info, subregions,
                                                                              subregions_info)
             if len(new_subregions_eye) != 0 and len(new_subregions_info_eye) != 0:
-                print "EYE FOUND"
+                # print "EYE FOUND"
                 self.fill_image(new_subregions_eye, new_subregions_info_eye, threshold, (255, 0, 0))
                 is_face_by_eye = True
 
             new_subregions_mouth, new_subregions_info_mouth = select_valid_subregion_mouth(largest_region_info, subregions,
                                                                                subregions_info)
             if len(new_subregions_mouth) != 0 and len(new_subregions_info_mouth) != 0:
-                print "MOUTH FOUND"
+                # print "MOUTH FOUND"
                 self.fill_image(new_subregions_mouth, new_subregions_info_mouth, threshold, (0, 255, 0))
                 is_face_by_mouth = True
 
@@ -583,7 +583,7 @@ class ImageObject:
                 # print new_subregions_eye
                 new_subregion_info_nose = select_valid_subregion_nose(new_subregions_eye[0], new_subregions_info_eye[0],
                                                                       new_subregions_mouth[0], new_subregions_info_mouth[0])
-                print new_subregion_info_nose
+                # print new_subregion_info_nose
                 self.box_image([new_subregion_info_nose], threshold)
                 # self.box_image([largest_region_info], threshold)
 
