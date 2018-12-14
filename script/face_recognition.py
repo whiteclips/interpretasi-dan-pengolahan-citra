@@ -37,8 +37,14 @@ def crop_face(img_arr):
     distance_x = abs(x_right - x_left)
     x_center = int((x_left + x_right) / 2)
     y_center = int((y_left + y_right) / 2)
-    x_a = int(((1.718 * x_left) - x_center) / 0.618)
-    x_b = int(((1.518 * x_right) - x_center) / 0.618)
+
+    if x_left > x_right:
+        x_left, x_right = x_right, x_left
+
+    # x_a = int(((1.718 * x_left) - x_center) / 0.618)
+    x_a = int(x_left - (0.33*distance_x))
+    # x_b = int(((1.518 * x_right) - x_center) / 0.618)
+    x_b = int(x_right + (0.33*distance_x))
     y_d = int(y_center + (1.618 * distance_x))
     y_c = int(y_d - (1.618 * (y_d - y_center)))
     
@@ -46,11 +52,14 @@ def crop_face(img_arr):
         y_c, y_d = y_d, y_c
     if (x_b < x_a):
         x_a, x_b = x_b, x_a
-#     print("X : {} {} {} {} ".format(x_a,x_b,y_d,y_c))
+    print("XA = {}, XB = {}, YA = {}, YB = {} ".format(x_a,x_b,y_d,y_c))
     
     image = img_arr[y_c:y_d, x_a:x_b]
-    
-    return scale_image(image)
+    cv2.imwrite("image_result1.jpg", image)
+    image = scale_image(image)
+
+    cv2.imwrite("image_result2.jpg", image)
+    return image
 
 def scale_image(image):
     current_height, current_width = image.shape
