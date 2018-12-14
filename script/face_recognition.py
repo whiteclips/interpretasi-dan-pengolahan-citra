@@ -8,12 +8,11 @@ from scipy.ndimage import gaussian_filter
 from glob import glob
 
 
-def crop_face(image_name):
-    face_cascade = cv2.CascadeClassifier('haarcascades/haarcascade_frontalface_default.xml')
-    eye_cascade = cv2.CascadeClassifier('haarcascades/haarcascade_eye.xml')
-    image = cv2.imread(image_name)
-    print image is None
-    gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
+def crop_face(img_arr):
+    face_cascade = cv2.CascadeClassifier('script/haarcascades/haarcascade_frontalface_default.xml')
+    eye_cascade = cv2.CascadeClassifier('script/haarcascades/haarcascade_eye.xml')
+#     gray = cv2.cvtColor(img_arr, cv2.COLOR_BGR2GRAY)
+    gray = img_arr
     faces = face_cascade.detectMultiScale(gray, 1.3, 5)
     for (x, y, w, h) in faces:
         roi_gray = gray[y:y + h, x:x + w]
@@ -42,28 +41,29 @@ def crop_face(image_name):
     x_b = int(((1.518 * x_right) - x_center) / 0.618)
     y_d = int(y_center + (1.618 * distance_x))
     y_c = int(y_d - (1.618 * (y_d - y_center)))
-    image = image[y_c:y_d, x_a:x_b]
-    try:
-        image = scale_image(image)
-    finally:
-        cv2.imwrite("image_result.jpg", image)
-
+    
+    if (y_c > y_d):
+        y_c, y_d = y_d, y_c
+    if (x_b < x_a):
+        x_a, x_b = x_b, x_a
+#     print("X : {} {} {} {} ".format(x_a,x_b,y_d,y_c))
+    
+    image = img_arr[y_c:y_d, x_a:x_b]
+    
+    return scale_image(image)
 
 def scale_image(image):
-    current_height, current_width, _ = image.shape
+    current_height, current_width = image.shape
     wanted_width = 250
     wanted_height = 300
+    print("Curr size: {} x {}".format(current_height, current_width))
     if current_height != wanted_height or current_width != wanted_width:
         image = cv2.resize(image, (wanted_width, wanted_height), interpolation=cv2.INTER_AREA)
     return image
 
-
-def get_contour(image):
-    x = image.convert('L')  # makes it greyscale
-    x_arr = np.asarray(x.getdata(), dtype=np.float64).reshape((x.size[1], x.size[0]))
-    x_arr = gaussian_filter(x_arr, sigma=3)  # Apply gaussian filter
+def get_contour(x_arr):
+    x_arr = gaussian_filter(x_arr, sigma=3) # Apply gaussian filter
     return x_arr
-
 
 def crop_image(image):
     CROP_SIZE = 250
@@ -76,8 +76,8 @@ def crop_image(image):
 
 def fit_polynom(data):
     f = []
-    size = data.shape[0]
-    for i in range(size):
+    size = data.shape[1]
+    for i in range(data.shape[0]):
         f.append(np.poly1d(np.polyfit(np.arange(size), data[i, :], 10)))
     return f
 
@@ -85,9 +85,10 @@ def fit_polynom(data):
 def model_error(polynom, data):
     def error(y_true, y_pred):
         return np.average(np.abs(y_true - y_pred))
-
+    print(data.shape)
+    print(len(polynom))
     err = 0
-    idx = np.arange(data.shape[0])
+    idx = np.arange(data.shape[1])
     for i in range(data.shape[0]):
         err += error(data[i, :], polynom[i](idx))
     return err / data.shape[0]
@@ -107,8 +108,13 @@ def load_model(f_name):
 
 
 def train(image, label):
+    print(os.getcwd())
+    print(type(image))
+    x=image.convert('L')
+    x = np.asarray(x.getdata(),dtype='uint8').reshape((x.size[1],x.size[0]))
+    # print(x.shape)
     # crop image
-    x = crop_image(image)
+    x = crop_face(x)
     # preprocess image (contourizing)
     contour_arr = get_contour(x)
     # fit model
@@ -124,8 +130,10 @@ def train(image, label):
 
 
 def predict(image):
+    x=image.convert('L')
+    x = np.asarray(x.getdata(),dtype='uint8').reshape((x.size[1],x.size[0]))
     # crop image
-    x = crop_image(image)
+    x = crop_face(x)
     # preprocess image (contourizing)
     contour_arr = get_contour(x)
     # evaluate
